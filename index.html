@@ -1,0 +1,1713 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BabyBrick">
+<title>BabyBrick Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --brick-red:#D9263D;--brick-blue:#1F63C6;--brick-yellow:#F5B700;--brick-green:#189A57;
+  --bg:#F6F7FB;--surface:#FFFFFF;--surface-2:#EEF1F8;--ink:#1B1A33;--muted:#5E6280;--line:rgba(27,26,51,.10);
+  --accent:var(--brick-red);
+  --glass:rgba(255,255,255,.66);--glass-border:rgba(255,255,255,.9);
+  --shadow:0 1px 2px rgba(27,26,51,.05),0 18px 40px -20px rgba(27,26,51,.24);
+  --sans:"Bricolage Grotesque",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --serif:"Fraunces",ui-serif,Georgia,"Times New Roman",serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10121B;--surface:#181B28;--surface-2:#232739;--ink:#F2F3FA;--muted:#A5AAC6;--line:rgba(242,243,250,.10);
+    --glass:rgba(24,27,40,.66);--glass-border:rgba(255,255,255,.08);
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 22px 48px -22px rgba(0,0,0,.75);color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10121B;--surface:#181B28;--surface-2:#232739;--ink:#F2F3FA;--muted:#A5AAC6;--line:rgba(242,243,250,.10);
+  --glass:rgba(24,27,40,.66);--glass-border:rgba(255,255,255,.08);
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 22px 48px -22px rgba(0,0,0,.75);color-scheme:dark;
+}
+:root[data-palette="ocean"]{--accent:var(--brick-blue)}
+:root[data-palette="blossom"]{--accent:#D6457A}
+:root[data-palette="garden"]{--accent:var(--brick-green)}
+:root{--accent-soft:color-mix(in oklab,var(--accent) 15%,transparent);--wash-1:color-mix(in oklab,var(--accent) 16%,var(--bg));--wash-2:color-mix(in oklab,var(--brick-blue) 13%,var(--bg));--wash-3:color-mix(in oklab,var(--brick-yellow) 18%,var(--bg))}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{height:100%;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 84px);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;background:var(--bg)}
+body{margin:0;min-height:100%;font-family:var(--sans);color:var(--ink);background:
+  radial-gradient(60rem 40rem at 8% -8%,var(--wash-1),transparent 60%),
+  radial-gradient(50rem 36rem at 96% 4%,var(--wash-2),transparent 60%),
+  radial-gradient(44rem 30rem at 50% 100%,var(--wash-3),transparent 60%),var(--bg);
+  -webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+img{max-width:100%;display:block}
+:focus-visible{outline:3px solid color-mix(in oklab,var(--accent) 60%,transparent);outline-offset:3px;border-radius:10px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tab{font-variant-numeric:tabular-nums}
+.wrap{max-width:1140px;margin:0 auto;padding:0 18px}
+.muted{color:var(--muted)}
+.serif{font-family:var(--serif);font-style:italic}
+
+/* surfaces */
+.card{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:26px}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);border:1px solid var(--glass-border)}
+.chip{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:700}
+
+/* tactile buttons */
+.btn{--b:var(--accent);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:11px 18px;border-radius:14px;background:var(--b);color:#fff;font-weight:650;letter-spacing:-.01em;box-shadow:0 4px 0 color-mix(in oklab,var(--b) 66%,black),0 12px 22px -10px color-mix(in oklab,var(--b) 70%,transparent);transition:transform .12s cubic-bezier(.2,.9,.25,1.15),box-shadow .12s,filter .2s;touch-action:manipulation;user-select:none;-webkit-user-select:none;text-align:center}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in oklab,var(--b) 66%,black),0 4px 10px -6px color-mix(in oklab,var(--b) 70%,transparent)}
+.btn.soft{background:var(--surface-2);color:var(--ink);box-shadow:0 3px 0 var(--line)}
+.btn.soft:active{box-shadow:0 1px 0 var(--line)}
+.btn:disabled{opacity:.42;pointer-events:none}
+.btn.sq{width:48px;padding:0}
+.btn.sm{min-height:40px;padding:8px 12px;border-radius:12px}
+.field{width:100%;min-height:48px;border-radius:14px;background:var(--surface-2);border:1px solid transparent;padding:11px 14px;font-size:16px;transition:border-color .2s,background .2s;-webkit-appearance:none;appearance:none}
+.field:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px;border-radius:16px;background:var(--surface-2)}
+.seg button{min-height:40px;border-radius:12px;font-size:14px;font-weight:600;color:var(--muted);transition:background .25s,color .25s,box-shadow .25s}
+.seg button[aria-checked="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.icon{width:18px;height:18px;flex:none}
+
+/* header */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;padding:8px 12px 0}
+.topbar-in{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:22px;border:1px solid transparent;transition:background .3s,box-shadow .3s,border-color .3s}
+.topbar.scrolled .topbar-in{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);border-color:var(--glass-border);box-shadow:var(--shadow)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.03em;font-size:17px}
+.logo-mark{display:flex;flex-direction:column;align-items:center;gap:0}
+.logo-mark svg{display:block;margin-top:-2px}
+.weekpill{background:var(--accent-soft);color:var(--accent)}
+.nav{display:none;gap:2px}
+.nav button{padding:8px 12px;border-radius:12px;font-size:14px;font-weight:600;color:var(--muted);transition:background .25s,color .25s}
+.nav button.on{background:var(--surface-2);color:var(--ink)}
+.head-actions{display:flex;gap:6px;position:relative}
+.popover{position:absolute;right:0;top:52px;width:min(20rem,calc(100vw - 2rem));padding:16px;border-radius:24px;z-index:50;transform-origin:top right;animation:pop .2s ease both}
+.popover[hidden]{display:none}
+@keyframes pop{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:none}}
+.pal{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pal button{display:flex;align-items:center;gap:9px;min-height:48px;padding:0 11px;border-radius:16px;border:1px solid var(--line);font-size:14px;font-weight:600;text-align:left;transition:border-color .2s,background .2s}
+.pal button[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.sw{display:flex}.sw i{width:18px;height:18px;border-radius:50%;border:2px solid var(--surface);margin-left:-6px}.sw i:first-child{margin-left:0}
+
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:0 12px calc(env(safe-area-inset-bottom,0px) + 10px)}
+.dock-in{max-width:440px;margin:0 auto;display:flex;padding:6px;border-radius:24px;box-shadow:var(--shadow)}
+.dock button{flex:1;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:18px;font-size:11px;font-weight:600;color:var(--muted);transition:background .25s,color .25s}
+.dock button.on{background:var(--accent-soft);color:var(--accent)}
+.dock .icon{width:21px;height:21px}
+@media (min-width:1024px){.nav{display:flex}.dock{display:none}}
+
+/* sections */
+section{position:relative}
+.sec{padding:56px 0}
+.sec-head{margin-bottom:26px;display:flex;flex-direction:column;gap:14px;opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.sec-head.in{opacity:1;transform:none}
+.sec-head h2{margin:0;font-size:clamp(2rem,6vw,3rem);line-height:1.05;letter-spacing:-.035em;font-weight:800;text-wrap:balance}
+.sec-head p{margin:10px 0 0;max-width:36rem;font-size:1.05rem;color:var(--muted);text-wrap:pretty}
+@media (min-width:720px){.sec{padding:84px 0}.sec-head{flex-direction:row;align-items:flex-end;justify-content:space-between}}
+
+/* hero */
+.hero{overflow:hidden;padding:14px 0 6px}
+.floaters{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.floaters span{position:absolute;animation:float var(--d) ease-in-out infinite;animation-delay:var(--dl)}
+@keyframes float{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-18px) rotate(calc(var(--r) + 7deg))}}
+.studs{display:flex;gap:7px;margin-bottom:18px}
+.studs i{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2);animation:studin .5s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes studin{from{transform:scale(0)}to{transform:scale(1)}}
+.headline{margin:0;font-size:clamp(2.4rem,10.5vw,5rem);line-height:.92;letter-spacing:-.055em;font-weight:800;max-width:15ch}
+.headline span{display:inline-block;margin-right:.22em;animation:drop .9s cubic-bezier(.3,1.45,.5,1) both}
+@keyframes drop{0%{opacity:0;transform:translateY(-80px) rotate(var(--rot,-4deg))}60%{opacity:1}100%{opacity:1;transform:none}}
+.sub{margin:20px 0 0;max-width:34rem;font-size:clamp(1.1rem,3.6vw,1.3rem);color:var(--muted);animation:fade .8s .7s both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.hero-grid{display:grid;gap:16px;margin-top:24px}
+@media (min-width:900px){.hero-grid{grid-template-columns:1.2fr .8fr;align-items:start}}
+.growth{position:relative;overflow:hidden;border-radius:32px;padding:24px;box-shadow:var(--shadow)}
+.growth .glow{position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:var(--accent);opacity:.16;filter:blur(40px)}
+.growth h3{margin:4px 0 0;font-size:clamp(1.7rem,6vw,2.2rem);line-height:1.1;letter-spacing:-.03em;font-weight:800;text-wrap:balance}
+.weekbadge{background:var(--ink);color:var(--bg);font-size:14px;padding:6px 12px}
+.sizeorb{width:164px;height:164px;margin:26px auto;border-radius:50%;display:grid;place-items:center;background:color-mix(in oklab,var(--surface) 72%,transparent);box-shadow:inset 0 2px 12px rgba(0,0,0,.06);animation:grow .8s cubic-bezier(.2,.8,.2,1) both}
+.sizeorb>span{font-size:76px;line-height:1;animation:breathe 3.2s ease-in-out infinite}
+@keyframes grow{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.06);opacity:1}100%{transform:scale(1)}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.stats2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{border-radius:18px;padding:13px 14px;background:color-mix(in oklab,var(--surface) 72%,transparent)}
+.stat dt{font-size:12px;font-weight:600;color:var(--muted)}
+.stat dd{margin:3px 0 0;font-size:18px;font-weight:700}
+.stat.wide{grid-column:span 2;display:flex;align-items:center;gap:12px}
+.tower-card{padding:24px;border-radius:32px;display:flex;flex-direction:column;align-items:center}
+.tower{display:flex;flex-direction:column-reverse;align-items:center;gap:3px;margin:24px 0}
+.tower .row{display:flex;gap:3px}
+.tower .tb{position:relative;border-radius:6px;transition:transform .15s}
+.tower .tb:active{transform:translateY(2px)}
+.tower .tb.dropin{animation:bdrop .7s cubic-bezier(.3,1.5,.5,1) both;animation-delay:var(--dl)}
+@keyframes bdrop{from{opacity:0;transform:translateY(-120px)}to{opacity:1;transform:none}}
+.tower .tb.cur svg{animation:bob 1.6s ease-in-out infinite}
+.tower .tb.cur::after{content:"";position:absolute;inset:-3px;border-radius:8px;box-shadow:0 0 0 2px var(--ink)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.bar{width:100%;height:10px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:99px;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.rainbow{background:linear-gradient(90deg,var(--brick-red),var(--brick-yellow),var(--brick-blue),var(--brick-green))}
+.stack{display:grid;gap:18px}
+.pad{padding:20px}
+.lbl{font-size:14px;font-weight:600;color:var(--muted);margin:0}
+.stepper{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px}
+.bignum{font-size:64px;font-weight:800;letter-spacing:-.05em;line-height:1;display:block}
+.flipnum{animation:flipn .45s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes flipn{from{opacity:0;transform:translateY(24px) rotate(-6deg)}to{opacity:1;transform:none}}
+.ok{color:var(--brick-green)} .err{color:var(--brick-red)}
+
+/* dashboard */
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (min-width:1024px){.bento{grid-template-columns:repeat(4,1fr);gap:16px}.bento .hero-m{grid-row:span 2}.bento .w2{grid-column:span 2}}
+.bento .hero-m,.bento .w2m{grid-column:span 2}
+@media (min-width:1024px){.bento .hero-m{grid-column:span 2}}
+.metric{position:relative;overflow:hidden;min-height:150px;padding:20px;text-align:left;border-radius:24px;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.metric:active{transform:scale(.98)}
+.metric .tone{position:absolute;inset:0 0 auto;height:6px}
+.metric .ml{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--muted)}
+.metric .face{margin-top:12px;animation:faceIn .3s ease both}
+@keyframes faceIn{from{opacity:0;transform:perspective(600px) rotateX(-70deg)}to{opacity:1;transform:none}}
+.metric .val{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.metric .back{font-size:15.5px;line-height:1.5;text-wrap:pretty}
+.mega{font-size:clamp(5.5rem,22vw,7rem);font-weight:800;letter-spacing:-.06em;line-height:.95}
+.tri3{display:flex;gap:6px;margin-top:12px}.tri3 i{height:8px;flex:1;border-radius:99px}
+@media (hover:hover){.metric:hover{transform:translateY(-4px)}}
+
+/* weeks */
+.rail{display:flex;gap:8px;overflow-x:auto;padding:4px 18px 12px;margin:0 -18px;scroll-snap-type:x proximity;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.wchip{flex:none;width:48px;height:58px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:14px;scroll-snap-align:center;background:var(--surface-2);color:var(--muted);transition:background .25s,color .25s,transform .2s}
+.wchip.done{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.wchip.on{color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25);transform:translateY(-2px)}
+.wchip .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:3px}
+.wchip.on .dot{background:#fff}
+.detail{display:grid;gap:16px;margin-top:14px;animation:swap .4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes swap{from{opacity:0;transform:translateY(20px) scale(.985)}to{opacity:1;transform:none}}
+@media (min-width:1024px){.detail{grid-template-columns:1.1fr 1fr}}
+.studbg{position:absolute;inset:0;opacity:.5;background-image:radial-gradient(circle,color-mix(in oklab,var(--ink) 10%,transparent) 2.5px,transparent 3px);background-size:22px 22px;pointer-events:none}
+.wtitle{margin:20px 0 0;font-size:clamp(4.2rem,17vw,6rem);font-weight:800;letter-spacing:-.06em;line-height:.95}
+.legobox{margin-top:26px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;padding:16px;border-radius:22px;background:color-mix(in oklab,var(--surface-2) 85%,transparent)}
+.cluster{display:flex;flex-direction:column;align-items:center;gap:2px}.cluster div{display:flex;gap:3px}
+.note{border-radius:28px;padding:22px}
+.note .k{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;margin:0}
+.note .v{margin:8px 0 0;font-size:1.2rem;font-weight:700;line-height:1.35;letter-spacing:-.01em;text-wrap:pretty}
+.note .vs{margin:8px 0 0;font-family:var(--serif);font-style:italic;font-size:1.4rem;line-height:1.3;text-wrap:pretty}
+.navrow{display:flex;gap:8px;margin-top:22px}.navrow .btn{flex:1}
+
+/* timeline */
+.tl-scroll{overflow-x:auto;scrollbar-width:none;border-radius:32px}
+.tl-scroll::-webkit-scrollbar{display:none}
+.tl{position:relative;padding:22px 24px 28px}
+.bands{display:flex;height:40px}
+.bands div{padding:0 3px}
+.bands span{display:flex;align-items:center;height:36px;border-radius:12px;padding:0 12px;font-size:14px;font-weight:700}
+.flags{position:relative;height:64px;margin-top:14px}
+.flag{position:absolute;bottom:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px}
+.flag b{white-space:nowrap;border-radius:9px;background:var(--ink);color:var(--bg);font-size:11px;padding:4px 8px}
+.track{position:relative;height:56px;margin-top:4px}
+.track .base,.track .fill{position:absolute;top:50%;height:8px;margin-top:-4px;border-radius:99px;left:0}
+.track .base{right:0;background:var(--surface-2)}
+.track .fill{width:0;transition:width 1.8s cubic-bezier(.2,.8,.2,1)}
+.node{position:absolute;top:0;height:56px;width:64px;margin-left:-32px;display:grid;place-items:center}
+.node i{position:relative;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:3px solid var(--line);background:var(--surface);color:var(--muted);font-style:normal;font-size:11px;font-weight:700;transition:transform .2s}
+.node.done i{color:#fff}
+.node.cur i{width:44px;height:44px;font-size:14px;color:#fff}
+.node.sel:not(.cur) i{box-shadow:0 0 0 4px var(--accent-soft)}
+.node.cur::before{content:"";position:absolute;width:48px;height:48px;border-radius:50%;background:var(--c);opacity:.25;animation:ping 1.6s cubic-bezier(0,0,.2,1) infinite}
+@keyframes ping{75%,100%{transform:scale(1.8);opacity:0}}
+.emo{display:flex;margin-top:10px}.emo span{width:64px;flex:none;text-align:center;font-size:20px}
+
+/* growth */
+.ggrid{display:grid;gap:18px}
+@media (min-width:1024px){.ggrid{grid-template-columns:1.2fr 1fr}}
+.stage-wrap{perspective:900px}
+.stage{position:relative;height:350px;border-radius:32px;background:var(--surface-2);overflow:hidden;display:grid;place-items:center;transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.orb{position:relative;border-radius:50%;display:grid;place-items:center;transition:width .7s cubic-bezier(.3,1.4,.5,1),height .7s cubic-bezier(.3,1.4,.5,1),background .5s}
+.orb .heart{color:#fff;animation:beat 1.35s ease-in-out infinite;display:grid}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
+.orbit{position:absolute;inset:0;animation:spin 40s linear infinite;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.orbit span{position:absolute;left:50%;top:50%}
+.stage .tag{position:absolute;left:16px;right:16px;bottom:16px;display:flex;align-items:flex-end;justify-content:space-between}
+.stage .tag .glass{border-radius:18px;padding:10px 14px}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:99px;background:linear-gradient(90deg,var(--brick-red),var(--brick-yellow) 35%,var(--brick-blue) 68%,var(--brick-green));margin:16px 0 0}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:36px;height:30px;border-radius:9px;background:var(--surface);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
+.range::-moz-range-thumb{width:30px;height:24px;border-radius:9px;background:var(--surface);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
+.ticks{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);margin-top:8px}
+.gain{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--brick-green);margin-top:4px}
+.cmp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cmpc{display:flex;flex-direction:column;align-items:center;text-align:center;border-radius:24px;padding:14px 8px;min-height:210px;background:color-mix(in oklab,var(--surface-2) 65%,transparent)}
+.cmpc.em{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
+.cmpc.empty{border:1.5px dashed var(--line);background:none;justify-content:center;font-size:13px;color:var(--muted)}
+.cmpc .ob{height:104px;display:grid;place-items:center}
+.bars{display:flex;align-items:flex-end;gap:3px;height:130px;margin-top:16px}
+.bars button{flex:1;height:100%;position:relative}
+.bars i{position:absolute;left:0;right:0;bottom:0;border-radius:4px 4px 0 0;height:0;transition:height .8s cubic-bezier(.2,.8,.2,1),background .3s,opacity .3s}
+
+/* words */
+.wgrid{display:grid;gap:16px;animation:swap .45s cubic-bezier(.2,.8,.2,1) both}
+@media (min-width:1024px){.wgrid{grid-template-columns:1.4fr 1fr}}
+.quote{position:relative;overflow:hidden;border-radius:36px;padding:34px 28px;background:linear-gradient(140deg,var(--wash-1),var(--wash-2) 60%,var(--wash-3));margin:0}
+.quote blockquote{position:relative;margin:20px 0 0;font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(1.9rem,7vw,3.1rem);line-height:1.12;letter-spacing:-.01em;text-wrap:balance}
+.quote figcaption{position:relative;margin-top:30px;display:inline-flex;align-items:center;gap:8px;border-radius:99px;padding:8px 16px;font-size:14px;font-weight:600;background:color-mix(in oklab,var(--surface) 80%,transparent)}
+.inkcard{border-radius:28px;padding:24px;background:var(--ink);color:var(--bg)}
+
+/* countdown */
+.cgrid{display:grid;gap:16px}
+@media (min-width:1024px){.cgrid{grid-template-columns:1.5fr 1fr}}
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;justify-items:center;padding:22px 12px}
+@media (min-width:640px){.rings{gap:22px;padding:28px}}
+.ring{position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring circle.p{transition:stroke-dashoffset 1.5s cubic-bezier(.2,.8,.2,1)}
+.ring .in{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .n{font-size:clamp(22px,6vw,38px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.ring .lbl{font-size:clamp(11px,3vw,14px)}
+.ticker{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ticker div{border-radius:16px;background:var(--surface-2);padding:12px 0;text-align:center}
+.ticker b{display:block;font-size:24px;font-weight:800}
+.ticker span{font-size:12px;font-weight:600;color:var(--muted)}
+.finale{margin-bottom:18px;border-radius:28px;padding:24px;color:#fff;background:linear-gradient(120deg,var(--brick-red),var(--brick-blue));display:flex;flex-direction:column;gap:14px}
+@media (min-width:640px){.finale{flex-direction:row;align-items:center;justify-content:space-between}}
+
+/* memories */
+.filters{display:flex;gap:8px;overflow-x:auto;margin:0 -18px;padding:0 18px 8px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filters button{flex:none;border-radius:99px;padding:9px 16px;font-size:14px;font-weight:600;background:var(--surface-2);color:var(--muted);transition:background .25s,color .25s}
+.filters button.on{background:var(--ink);color:var(--bg)}
+.mgrid{columns:1;column-gap:16px;margin-top:20px}
+@media (min-width:640px){.mgrid{columns:2}}@media (min-width:1024px){.mgrid{columns:3}}
+.mem{break-inside:avoid;margin-bottom:16px;overflow:hidden;border-radius:24px;animation:memin .45s cubic-bezier(.3,1.3,.5,1) both}
+@keyframes memin{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+.mem img{width:100%;object-fit:cover}
+.mem .mb{padding:16px}
+.mem h4{margin:10px 0 0;font-size:18px;line-height:1.3}
+.mem p{margin:6px 0 0;white-space:pre-line;color:var(--muted);font-size:15px}
+.mem .mf{display:flex;align-items:center;justify-content:space-between;margin-top:12px;font-size:12px;color:var(--muted)}
+.empty{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;padding:56px 24px}
+.typeicons{display:grid;grid-template-columns:repeat(5,44px);gap:8px}
+.typeicons span{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff}
+.usage{display:flex;align-items:center;gap:10px;margin-top:22px;font-size:12px;color:var(--muted)}
+.usage .bar{width:120px;height:6px}
+
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
+.sheet .scrim{position:absolute;inset:0;background:rgba(0,0,0,.42);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:fade .25s both}
+.sheet .panel{position:relative;width:100%;max-height:92%;overflow-y:auto;border-radius:28px 28px 0 0;padding:18px 20px calc(env(safe-area-inset-bottom,0px) + 26px);background:var(--surface);animation:up .4s cubic-bezier(.2,.9,.25,1) both}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@media (min-width:640px){.sheet{align-items:center}.sheet .panel{max-width:520px;border-radius:28px;padding:26px}}
+.grab{width:40px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+.types{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.types button{min-height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:16px;border:1px solid var(--line);font-size:11px;font-weight:600;color:var(--muted);transition:background .2s,color .2s}
+.types button[aria-checked="true"]{color:#fff;border-color:transparent}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:116px;border:2px dashed var(--line);border-radius:18px;color:var(--muted);font-weight:600;font-size:14px;cursor:pointer}
+.fl{display:block;margin-top:14px}.fl span{display:block;font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+
+/* reminders / studio */
+.two{display:grid;gap:16px}
+@media (min-width:1024px){.two{grid-template-columns:1.25fr 1fr}.two.rev{grid-template-columns:1fr 2fr}}
+.rem{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.rem:first-of-type{border-top:0}
+.rem .d{flex:none;align-self:flex-start;width:52px;text-align:center;border-radius:14px;background:var(--surface-2);padding:6px 0}
+.rem .d b{display:block;font-size:20px;line-height:1.1}
+.rem .d span{font-size:11px;font-weight:600;color:var(--muted)}
+.tools{display:grid;gap:14px}
+@media (min-width:640px){.tools{grid-template-columns:1fr 1fr}}
+.tool{display:flex;flex-direction:column;padding:20px;border-radius:24px}
+.tool .ti{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.tool p{margin:0}
+.tool .tt{margin-top:14px;font-size:18px;font-weight:700}
+.tool .td{margin-top:4px;font-size:14px;color:var(--muted)}
+.tool .ta{margin-top:auto;padding-top:16px;display:flex;gap:8px}
+.tool .ta .btn{flex:1}
+.status{margin-top:14px;font-size:14px;font-weight:600;color:var(--muted);min-height:1.2em}
+
+footer{padding:30px 0 calc(env(safe-area-inset-bottom,0px) + 120px)}
+@media (min-width:1024px){footer{padding-bottom:50px}}
+.foot{display:grid;gap:18px;margin-top:22px;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+@media (min-width:720px){.foot{grid-template-columns:1fr 1fr}.foot p:last-child{text-align:right}}
+.foot p{margin:0;max-width:30rem}
+
+/* views */
+.view{display:none}
+.view.on{display:block;animation:viewin .38s cubic-bezier(.2,.8,.2,1) both}
+@keyframes viewin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.vhead{padding-top:20px}
+.vhead h1{margin:0;font-size:clamp(2.1rem,9vw,3.4rem);line-height:1;letter-spacing:-.045em;font-weight:800}
+.vhead p{margin:10px 0 0;color:var(--muted);font-size:1.05rem;max-width:34rem}
+.subtabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:5px;border-radius:20px;margin-top:18px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 74px);z-index:30;box-shadow:var(--shadow)}
+.subtabs button{min-height:42px;border-radius:15px;font-weight:650;font-size:14px;color:var(--muted);transition:background .25s,color .25s,box-shadow .25s}
+.subtabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.subview{display:none}
+.subview.on{display:block;animation:viewin .32s cubic-bezier(.2,.8,.2,1) both}
+.view .sec{padding:22px 0 30px}
+.subview .sec-head h2{display:none}
+.subview .sec-head{margin-bottom:16px;opacity:1;transform:none}
+.subview .sec-head p{margin:0}
+.view[data-view="ask"] .sec,.view[data-view="tools"] .sec,.view[data-view="memories"] .sec{padding-top:20px}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+@media (min-width:900px){.quick{grid-template-columns:repeat(4,1fr)}}
+.qk{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:16px;border-radius:22px;text-align:left;transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.qk:active{transform:scale(.97)}
+.qk .qi{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;color:#fff;margin-bottom:10px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.qk b{font-size:15.5px}.qk span:last-child{font-size:13px;color:var(--muted)}
+.datesgrid{display:grid;gap:18px}
+@media (min-width:900px){.datesgrid{grid-template-columns:1fr 1fr;align-items:start}}
+/* real LEGO scale */
+.scale{margin-top:14px}
+.scale .lane{position:relative;display:flex;align-items:flex-end;gap:0;margin-top:8px}
+.scale .baby{height:12px;border-radius:99px;background:var(--accent);box-shadow:0 2px 0 color-mix(in oklab,var(--accent) 65%,black);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.scale .bricks{display:flex;margin-top:6px}
+.scale .bricks{margin-top:12px;gap:2px}
+.scale .bricks span{flex:none;height:20px;border-radius:4px;display:flex;justify-content:space-around;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.scale .bricks i{height:5px;margin-top:-5px;border-radius:2px 2px 0 0;background:inherit;filter:brightness(1.18)}
+.scale .cap{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);margin-top:6px}
+.legolink{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;font-weight:700;color:var(--accent);text-decoration:none}
+/* ask */
+.chatcard{border-radius:32px;overflow:hidden;display:flex;flex-direction:column}
+.chat{display:flex;flex-direction:column;gap:12px;padding:20px;min-height:320px;max-height:62vh;overflow-y:auto;scroll-behavior:smooth}
+.bub{max-width:88%;padding:12px 15px;border-radius:20px;font-size:15.5px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word;animation:memin .35s cubic-bezier(.3,1.3,.5,1) both}
+.bub.me{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:6px}
+.bub.ai{align-self:flex-start;background:var(--surface-2);border-bottom-left-radius:6px}
+.bub.ai.thinking{color:var(--muted)}
+.bub .acts{display:flex;gap:6px;margin-top:10px}
+.bub .acts button{font-size:12px;font-weight:700;padding:6px 10px;border-radius:10px;background:var(--surface);color:var(--ink)}
+.dots i{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:currentColor;animation:dot 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.sugs{display:flex;gap:8px;overflow-x:auto;padding:0 20px 14px;scrollbar-width:none}.sugs::-webkit-scrollbar{display:none}
+.sugs button{flex:none;border-radius:99px;padding:9px 14px;font-size:14px;font-weight:600;background:var(--accent-soft);color:var(--accent)}
+.composer{display:flex;gap:8px;align-items:flex-end;padding:12px;border-top:1px solid var(--line);background:var(--surface)}
+.composer textarea{flex:1;resize:none;max-height:140px;min-height:48px}
+.askhello{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin:auto 0;padding:10px}
+/* tools */
+.ttabs{display:flex;gap:8px;overflow-x:auto;margin:0 -18px;padding:0 18px 12px;scrollbar-width:none}.ttabs::-webkit-scrollbar{display:none}
+.ttabs button{flex:none;display:flex;align-items:center;gap:7px;border-radius:16px;padding:10px 14px;font-size:14px;font-weight:650;background:var(--surface-2);color:var(--muted);transition:background .25s,color .25s}
+.ttabs button.on{background:var(--ink);color:var(--bg)}
+.toolpane{animation:swap .35s cubic-bezier(.2,.8,.2,1) both}
+.kick{width:min(240px,62vw);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;margin:8px auto 0;color:#fff;background:radial-gradient(circle at 35% 28%,color-mix(in oklab,var(--accent) 60%,#fff),var(--accent) 62%);box-shadow:0 10px 0 color-mix(in oklab,var(--accent) 62%,black),0 30px 50px -18px color-mix(in oklab,var(--accent) 70%,transparent);transition:transform .1s,box-shadow .1s;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.kick:active{transform:translateY(8px);box-shadow:0 2px 0 color-mix(in oklab,var(--accent) 62%,black),0 12px 24px -12px color-mix(in oklab,var(--accent) 70%,transparent)}
+.kick b{display:block;font-size:72px;line-height:1;letter-spacing:-.04em}
+.kick span{font-size:14px;font-weight:600;opacity:.9}
+.kick.pulse{animation:kp .35s ease}
+@keyframes kp{50%{transform:scale(1.05)}}
+.kick.ct{background:radial-gradient(circle at 35% 28%,#7FA9EA,var(--brick-blue) 62%);--accent:var(--brick-blue)}
+.kick.ct.run{background:radial-gradient(circle at 35% 28%,#F07A8A,var(--brick-red) 62%);--accent:var(--brick-red)}
+.rows{display:grid;gap:0;margin-top:6px}
+.rowi{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
+.rowi:first-child{border-top:0}
+.check{display:flex;align-items:center;gap:12px;width:100%;padding:11px 0;border-top:1px solid var(--line);text-align:left;font-size:15px}
+.check:first-of-type{border-top:0}
+.box{flex:none;width:24px;height:24px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;color:#fff;transition:background .2s,border-color .2s}
+.check.on .box{background:var(--brick-green);border-color:var(--brick-green)}
+.check.on .t{color:var(--muted);text-decoration:line-through}
+.namechip{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:18px;background:var(--surface-2)}
+.namechip .nm{font-size:18px;font-weight:700}
+.heart{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:var(--muted)}
+.heart.on{color:var(--brick-red)}
+.sugname{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:18px;border:1px solid var(--line)}
+.bumps{display:flex;gap:10px;overflow-x:auto;margin:16px -18px 0;padding:0 18px 6px;scrollbar-width:none}.bumps::-webkit-scrollbar{display:none}
+.bump{flex:none;width:120px;border-radius:20px;overflow:hidden;position:relative}
+.bump img{width:120px;height:160px;object-fit:cover}
+.bump span{position:absolute;left:8px;bottom:8px;border-radius:10px;padding:3px 8px;font-size:12px;font-weight:700;background:rgba(0,0,0,.55);color:#fff}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:80}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.56-2.5 5.56-5.55C21.97 6.01 17.46 2 12 2Z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8Z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2Z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M15.5 8.8a1.9 1.9 0 0 0-3.5-1 1.9 1.9 0 0 0-3.5 1c0 1.8 3.5 3.7 3.5 3.7s3.5-1.9 3.5-3.7Z"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+    <symbol id="i-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.2 12h5.3l.5-1 2 4.5 2-7 1.5 3.5h6.3"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24" fill="currentColor"><path d="M10 7H6a3 3 0 0 0-3 3v4h4v4l3-4v-7Zm11 0h-4a3 3 0 0 0-3 3v4h4v4l3-4v-7Z"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3Z"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M15.5 10a1.9 1.9 0 0 0-3.5-1 1.9 1.9 0 0 0-3.5 1c0 1.8 3.5 3.7 3.5 3.7s3.5-1.9 3.5-3.7Z"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h4M2 10h4M2 14h4M2 18h4"/><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9.5 8h5M9.5 12H16M9.5 16H14"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/></symbol>
+    <symbol id="i-steth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2v2M5 2v2M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></symbol>
+    <symbol id="i-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5h6M19 2v6M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/><circle cx="9" cy="9" r="2"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M10 12a1 1 0 0 0-1 1v1a1 1 0 0 1-1 1 1 1 0 0 1 1 1v1a1 1 0 0 0 1 1M14 18a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1 1 1 0 0 1-1-1v-1a1 1 0 0 0-1-1"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+    <symbol id="i-party" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.8 11.3 2 22l10.7-3.8M4 3h.01M22 8h.01M15 2h.01M22 20h.01"/><path d="m22 2-2.2.8a2.9 2.9 0 0 0-1.9 3.2c.1.9-.6 1.6-1.4 1.6h-.4c-.9 0-1.6.7-1.8 1.6L14 11"/><path d="m22 13-.8-.3c-.9-.3-1.9.1-2.3.9-.4.8-1.3 1.2-2.2.9L14 13.6M11 2l.3.8c.3.9-.1 1.9-.9 2.3-.8.4-1.2 1.3-.9 2.2L10 10"/><path d="M11 13c1.9 1.9 2.8 4.2 2 5-.8.8-3.1-.1-5-2s-2.8-4.2-2-5c.8-.8 3.1.1 5 2Z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></symbol>
+    <symbol id="i-tools" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
+    <symbol id="i-foot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-2.4C4 11.5 3 10.5 3 8c0-2.7 1.5-6 4.5-6C9.4 2 10 3.8 10 5.5c0 3.1-2 5.7-2 8.7V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.4c0-2.1 1-3.1 1-5.6 0-2.7-1.5-6-4.5-6C14.6 6 14 7.8 14 9.5c0 3.1 2 5.7 2 8.7V20a2 2 0 1 0 4 0Z"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4M12 14l3-3"/><circle cx="12" cy="14" r="8"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4Z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.7l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.7v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+  </defs>
+</svg>
+
+<header class="topbar" id="topbar">
+  <div class="topbar-in">
+    <button class="logo" data-go="today" aria-label="BabyBrick Journey, back to top">
+      <span class="logo-mark" id="logoMark"></span>
+      <span>BabyBrick</span>
+      <span class="chip weekpill tab" id="weekPill"></span>
+    </button>
+    <nav class="nav" aria-label="Sections">
+      <button data-go="today">Today</button><button data-go="journey">Journey</button><button data-go="ask">Ask</button><button data-go="tools">Tools</button><button data-go="memories">Memories</button><button data-go="studio">Studio</button>
+    </nav>
+    <div class="head-actions">
+      <button class="btn soft sm" id="modeToggle" aria-label="Toggle dark mode"><svg class="icon"><use href="#i-sun"/></svg></button>
+      <button class="btn soft sm" data-go="studio" aria-label="Studio: dates, appearance and backups"><svg class="icon"><use href="#i-gear"/></svg></button>
+      <button class="btn soft sm" id="paletteBtn" aria-label="Theme settings" aria-expanded="false"><svg class="icon"><use href="#i-palette"/></svg></button>
+      <div class="popover card" id="popover" role="dialog" aria-label="Theme settings" hidden>
+        <p class="lbl" style="margin-bottom:8px">Appearance</p>
+        <div class="seg modeSeg" role="radiogroup" aria-label="Appearance"></div>
+        <p class="lbl" style="margin:16px 0 8px">Color theme</p>
+        <div class="pal paletteSeg" role="radiogroup" aria-label="Color theme"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="view" data-view="today">
+<section id="home" class="hero">
+  <div class="floaters" id="floaters" aria-hidden="true"></div>
+  <div class="wrap" style="position:relative">
+    <div class="studs" aria-hidden="true"><i style="background:var(--brick-red)"></i><i style="background:var(--brick-blue);animation-delay:.06s"></i><i style="background:var(--brick-yellow);animation-delay:.12s"></i><i style="background:var(--brick-green);animation-delay:.18s"></i></div>
+    <h1 class="headline"><span style="animation-delay:.1s">Our</span><span style="animation-delay:.19s;--rot:4deg">Little</span><span style="animation-delay:.28s">Brick</span><span style="animation-delay:.37s;--rot:4deg">is</span><span style="animation-delay:.46s">Building</span></h1>
+    <p class="sub">Week by week, we’re watching our tiny masterpiece grow.</p>
+    <div class="hero-grid">
+      <div class="growth glass" id="growthCard"></div>
+      <div class="tower-card card">
+        <p class="lbl" style="align-self:flex-start">The tower so far</p>
+        <p style="align-self:flex-start;margin:2px 0 0;font-size:24px;font-weight:800;letter-spacing:-.02em" class="tab" id="towerCount"></p>
+        <div class="tower" id="tower" role="group"></div>
+        <div class="bar"><i class="rainbow" id="heroBar"></i></div>
+        <p class="lbl tab" style="align-self:flex-start;margin-top:8px" id="heroDue"></p>
+      </div>
+    </div>
+    <div class="quick" aria-label="Shortcuts">
+      <button class="qk card" data-go="weeks"><span class="qi" style="background:var(--brick-red)"><svg class="icon"><use href="#i-grid"/></svg></span><b>This week</b><span>Details and notes</span></button>
+      <button class="qk card" data-go="ask"><span class="qi" style="background:var(--brick-blue)"><svg class="icon"><use href="#i-chat"/></svg></span><b>Ask Little Brick</b><span>Arabic or English</span></button>
+      <button class="qk card" data-go="tools"><span class="qi" style="background:var(--brick-green)"><svg class="icon"><use href="#i-tools"/></svg></span><b>Toolkit</b><span>Kicks, bag, names</span></button>
+      <button class="qk card" data-add><span class="qi" style="background:var(--brick-yellow)"><svg class="icon"><use href="#i-camera"/></svg></span><b>Add a memory</b><span>Photo, scan or note</span></button>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="subtabs glass" role="tablist" data-group="today"><button role="tab" aria-selected="false" data-subtab="glance">At a glance</button><button role="tab" aria-selected="false" data-subtab="words">Words</button><button role="tab" aria-selected="false" data-subtab="countdown">Countdown</button></div></div>
+<div class="subview" data-group="today" data-name="glance">
+<section id="dashboard" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Today at a glance</h2><p>Everything about this week in one place. Tap any card to see more.</p></div></div>
+  <div class="bento" id="bento"></div>
+</div></section>
+</div>
+<div class="subview" data-group="today" data-name="words">
+<section id="words" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Words for this week</h2><p>A quote for her, a message from him, and a promise to keep repeating.</p></div></div>
+  <div id="wordsBody"></div>
+</div></section>
+</div>
+<div class="subview" data-group="today" data-name="countdown">
+<section id="countdown" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Counting down</h2><p id="cdSub"></p></div></div>
+  <div id="finale"></div>
+  <div class="cgrid">
+    <div class="card rings" id="rings" style="border-radius:32px"></div>
+    <div class="card pad" style="border-radius:32px;display:flex;flex-direction:column;gap:18px;justify-content:space-between">
+      <div><p style="margin:0;font-weight:700" id="tkTitle"></p><p class="lbl" id="tkDate"></p></div>
+      <div class="ticker tab" id="ticker"></div>
+      <p class="lbl" style="font-weight:500">A new brick is added every week. When this clock reaches zero, the tower grows.</p>
+    </div>
+  </div>
+</div></section>
+</div>
+</div>
+<div class="view" data-view="journey">
+<div class="wrap vhead"><h1>Your journey</h1><p>All forty weeks, the full timeline, and how your baby grows.</p></div>
+<div class="wrap"><div class="subtabs glass" role="tablist" data-group="journey"><button role="tab" aria-selected="false" data-subtab="weeks">Week by week</button><button role="tab" aria-selected="false" data-subtab="timeline">Timeline</button><button role="tab" aria-selected="false" data-subtab="growth">Growth</button></div></div>
+<div class="subview" data-group="journey" data-name="weeks">
+<section id="weeks" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Week by week</h2><p>Browse all forty weeks: size, development, and a few words for each of you.</p></div></div>
+  <div class="rail" id="rail" role="tablist" aria-label="Choose a week"></div>
+  <div id="detail"></div>
+</div></section>
+</div>
+<div class="subview" data-group="journey" data-name="timeline">
+<section id="timeline" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>The whole journey</h2><p>Forty weeks, three trimesters, and the moments worth marking. Tap a week to open it.</p></div></div>
+  <div class="card" style="border-radius:32px;overflow:hidden"><div class="tl-scroll" id="tlScroll"><div class="tl" id="tl"></div></div></div>
+</div></section>
+</div>
+<div class="subview" data-group="journey" data-name="growth">
+<section id="growth" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Watch the growth</h2><p>Drag the slider to move through time. Tilt the stage to look around.</p></div></div>
+  <div class="ggrid">
+    <div class="stage-wrap" id="stageWrap"><div class="stage" id="stage"></div></div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card pad" style="border-radius:28px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><label for="slider" style="font-weight:700">Week</label><span class="tab" style="font-size:32px;font-weight:800;letter-spacing:-.03em" id="sliderVal"></span></div>
+        <input type="range" class="range" id="slider" min="1" max="40" step="1">
+        <div class="ticks tab"><span>1</span><span>13</span><span>27</span><span>40</span></div>
+        <dl class="stats2" style="margin:18px 0 0" id="gstats"></dl>
+      </div>
+      <div class="cmp" id="cmp"></div>
+    </div>
+  </div>
+  <div class="card pad" style="margin-top:18px;border-radius:28px">
+    <p class="lbl">Growth across all forty weeks</p>
+    <div class="bars" id="bars" role="img" aria-label="Bar chart of baby length by week"></div>
+  </div>
+</div></section>
+</div>
+</div>
+<div class="view" data-view="ask">
+<section id="ask" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Ask Little Brick</h2><p>A calm, knowledgeable companion that knows exactly where you are this week. Ask in Arabic or English.</p></div><button class="btn soft" id="askClear" hidden>New chat</button></div>
+  <div class="card chatcard">
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <div class="sugs" id="sugs"></div>
+    <div class="composer"><textarea class="field" id="askInput" rows="1" dir="auto" placeholder="Ask anything about this week…" aria-label="Your question"></textarea><button class="btn sq" id="askSend" aria-label="Send"><svg class="icon"><use href="#i-send"/></svg></button></div>
+  </div>
+  <p class="lbl" style="font-weight:500;font-size:13px;margin-top:12px" id="askNote">For guidance only, not a diagnosis. For bleeding, severe pain, fever, fluid leaking, reduced movement, or anything that worries you, contact your doctor or emergency services right away.</p>
+</div></section>
+</div>
+<div class="view" data-view="tools">
+<section id="tools" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Your toolkit</h2><p>Everything you reach for between appointments, in one place.</p></div></div>
+  <div class="ttabs" id="ttabs" role="tablist" aria-label="Tools"></div>
+  <div id="toolBody"></div>
+</div></section>
+</div>
+<div class="view" data-view="memories">
+<section id="memories" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Memories</h2><p>Photos, scans, journal entries and doctor’s notes, kept privately in this browser.</p></div><button class="btn" data-add>
+    <svg class="icon"><use href="#i-plus"/></svg>Add a memory</button></div>
+  <div id="bumpStrip"></div>
+  <div class="filters" id="filters" role="tablist" aria-label="Filter memories" style="margin-top:16px"></div>
+  <p class="err" id="memErr" role="alert" style="font-weight:600;font-size:14px"></p>
+  <div id="memBody"></div>
+  <div class="usage"><div class="bar"><i id="usageBar" style="background:var(--accent)"></i></div><span class="tab" id="usageTxt"></span></div>
+</div></section>
+</div>
+<div class="view" data-view="studio">
+<div class="wrap vhead"><h1>Studio</h1><p>Dates, appearance, sharing and backups.</p></div>
+<div class="wrap"><div class="subtabs glass" role="tablist" data-group="studio"><button role="tab" aria-selected="false" data-subtab="dates">Dates</button><button role="tab" aria-selected="false" data-subtab="make">Create & share</button><button role="tab" aria-selected="false" data-subtab="calendar">Calendar</button></div></div>
+<div class="subview" data-group="studio" data-name="dates">
+<section id="dates" class="sec"><div class="wrap">
+  <div class="sec-head in"><div><h2>Pregnancy dates</h2><p>Set the week your care team gave you, or calculate it from a date.</p></div></div>
+  <div class="two" style="grid-template-columns:1fr">
+    <div class="stack datesgrid">
+        <div class="card pad">
+          <p class="lbl">Current week</p>
+          <div class="stepper">
+            <button class="btn soft sq" id="wkMinus" aria-label="Previous week"><svg class="icon"><use href="#i-minus"/></svg></button>
+            <div style="text-align:center" aria-live="polite"><span class="bignum tab" id="wkNum"></span><span class="lbl">of 40</span></div>
+            <button class="btn sq" id="wkPlus" aria-label="Next week"><svg class="icon"><use href="#i-plus"/></svg></button>
+          </div>
+          <p class="lbl" style="text-align:center;font-size:12px;font-weight:500;margin-top:12px">Adjust if your care team gave you a different week. Weeks advance on their own after that.</p>
+        </div>
+        <div class="card pad">
+          <p style="margin:0;font-weight:700;display:flex;align-items:center;gap:8px"><svg class="icon" style="color:var(--accent)"><use href="#i-cal"/></svg>Due date calculator</p>
+          <div class="seg" style="margin-top:12px" role="radiogroup" aria-label="Calculate from" id="calcSeg">
+            <button role="radio" aria-checked="true" data-mode="lmp">Last period</button>
+            <button role="radio" aria-checked="false" data-mode="due">Known due date</button>
+          </div>
+          <label class="fl"><span id="calcLabel">First day of your last period</span><input type="date" class="field" id="calcDate"></label>
+          <p style="min-height:48px;font-size:14px;margin:12px 0" id="calcOut" aria-live="polite"></p>
+          <button class="btn" style="width:100%" id="calcApply">Use these dates</button>
+          <p class="lbl ok" style="text-align:center;margin-top:8px;min-height:1.2em" id="calcMsg"></p>
+        </div>
+      </div>
+  </div>
+</div></section>
+</div>
+<div class="subview" data-group="studio" data-name="make">
+<section id="studio" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Studio</h2><p>Make it yours, keep it safe, and share the build with the people you love.</p></div></div>
+  <div class="two rev">
+    <div class="card pad" style="border-radius:28px">
+      <p style="margin:0 0 10px;font-weight:700">Appearance</p>
+      <div class="seg modeSeg" role="radiogroup" aria-label="Appearance"></div>
+      <p style="margin:18px 0 10px;font-weight:700">Color theme</p>
+      <div class="pal paletteSeg" role="radiogroup" aria-label="Color theme"></div>
+      <label for="nick" style="display:block;margin-top:18px;font-weight:700">Baby’s nickname</label>
+      <div style="display:flex;gap:8px;margin-top:8px"><input id="nick" class="field" maxlength="40"><button class="btn soft" id="nickSave">Save</button></div>
+    </div>
+    <div class="tools">
+      <div class="tool card"><span class="ti" style="background:var(--brick-red)"><svg class="icon"><use href="#i-share"/></svg></span><p class="tt">Progress card</p><p class="td">A beautiful image of this week to send to family or post.</p><div class="ta"><button class="btn" id="cardBtn">Save progress card</button></div></div>
+      <div class="tool card"><span class="ti" style="background:var(--brick-blue)"><svg class="icon"><use href="#i-book"/></svg></span><p class="tt">Memory book</p><p class="td">Your photos, scans and notes laid out as a PDF keepsake.</p><div class="ta"><button class="btn" style="--b:var(--brick-blue)" id="bookBtn">Save memory book</button></div></div>
+      <div class="tool card"><span class="ti" style="background:var(--brick-green)"><svg class="icon"><use href="#i-print"/></svg></span><p class="tt">Printable timeline</p><p class="td">All forty weeks on one page, ready for the fridge or the nursery wall.</p><div class="ta"><button class="btn soft" id="tlBtn">Save timeline PDF</button></div></div>
+      <div class="tool card"><span class="ti" style="background:#7A5AF8"><svg class="icon"><use href="#i-file"/></svg></span><p class="tt">Backup and restore</p><p class="td">Save everything as a file, or restore it on another device.</p><div class="ta"><button class="btn soft" id="exportBtn">Export</button><button class="btn soft" id="importBtn">Import</button><input type="file" accept="application/json,.json" class="sr" id="importFile" aria-label="Import backup file"></div></div>
+    </div>
+  </div>
+  <p class="status" id="studioStatus" role="status"></p>
+</div></section>
+</div>
+<div class="subview" data-group="studio" data-name="calendar">
+<section id="reminders" class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>Reminders</h2><p>Every week gets a reminder on the day it begins. Here’s what’s coming.</p></div></div>
+  <div class="two">
+    <div class="card pad" style="border-radius:28px" id="remList"></div>
+    <div class="card pad" style="border-radius:28px;display:flex;flex-direction:column">
+      <p style="margin:0;font-weight:700;display:flex;align-items:center;gap:8px"><svg class="icon" style="color:var(--brick-blue)"><use href="#i-cal"/></svg>Apple Calendar</p>
+      <p class="muted" style="margin:10px 0 0;font-size:15px" id="calIntro">Open the calendar file <b style="color:var(--ink)">babybrick-calendar.ics</b> on your iPhone and tap <b style="color:var(--ink)">Add All</b>. Every week from 1 to 40 lands in your calendar with an alert at 9:00, a line of motivation, and a link back to this page.</p>
+      <div class="glass" style="border-radius:18px;padding:16px;margin-top:16px;font-size:14px" id="notifPreview"></div>
+      <button class="btn" style="width:100%;margin-top:16px" data-ics hidden id="icsBtn">Add all 40 weeks to Apple Calendar</button>
+      <p class="lbl" style="font-weight:500;margin-top:14px;font-size:13px" id="icsNote">If you change the current week here, ask for a new calendar file so the dates match.</p>
+    </div>
+  </div>
+</div></section>
+</div>
+</div>
+</main>
+
+<footer><div class="wrap">
+  <div style="display:flex;align-items:flex-end;gap:4px" id="footBricks" aria-hidden="true"></div>
+  <div class="foot">
+    <p>BabyBrick Journey shares typical week-by-week development for encouragement and education. Every pregnancy is different; always follow the advice of your doctor or midwife.</p>
+    <p>Your journal, photos and settings are stored only in this browser. LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize or endorse this app.</p>
+  </div>
+</div></footer>
+
+<nav class="dock" aria-label="Quick navigation"><div class="dock-in glass">
+  <button data-go="today"><svg class="icon"><use href="#i-home"/></svg>Today</button>
+  <button data-go="journey"><svg class="icon"><use href="#i-grid"/></svg>Journey</button>
+  <button data-go="ask"><svg class="icon"><use href="#i-chat"/></svg>Ask</button>
+  <button data-go="tools"><svg class="icon"><use href="#i-tools"/></svg>Tools</button>
+  <button data-go="memories"><svg class="icon"><use href="#i-book"/></svg>Memories</button>
+</div></nav>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Add a memory" hidden>
+  <div class="scrim" data-close></div>
+  <div class="panel">
+    <div class="grab"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h3 style="margin:0;font-size:20px;letter-spacing:-.02em">Add a memory</h3><button class="btn soft sm" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
+    <div class="types" id="types" role="radiogroup" aria-label="Memory type"></div>
+    <div class="fl"><span id="imgLabel">Image</span>
+      <input type="file" accept="image/*" class="sr" id="memFile">
+      <div id="imgSlot"></div>
+    </div>
+    <label class="fl"><span>Title</span><input class="field" id="memTitle" maxlength="80"></label>
+    <label class="fl"><span>Notes</span><textarea class="field" id="memText" maxlength="4000" style="min-height:110px;resize:vertical"></textarea></label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <label class="fl"><span>Date</span><input type="date" class="field" id="memDate"></label>
+      <label class="fl"><span>Week</span><select class="field" id="memWeek"></select></label>
+    </div>
+    <p class="err" id="sheetErr" role="alert" style="font-weight:600;font-size:14px;min-height:1em"></p>
+    <button class="btn" style="width:100%" id="memSave">Save memory</button>
+  </div>
+</div>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+"use strict";
+const STANDALONE = !(window.claude && typeof window.claude.use === "function");
+const CLAUDE_URL = "https://claude.ai/artifact/FgDiHhX3oXFzF5gjbZwNr2";
+const WEEKS = [{"week":1,"size":"A hopeful wish","sizePhrase":"still a hopeful wish","emoji":"✨","lengthCm":0,"weightG":0,"lego":"An empty baseplate","motivation":"Every great build starts with an empty baseplate and a hopeful heart.","milestone":"Your cycle begins. Pregnancy weeks are counted from the first day of your last period.","fatherNote":"Start the good habits now: more water in the fridge, more rest on the calendar.","quote":"Before anything is built, someone dares to imagine it.","husbandMessage":"Whatever comes next, I’m building it with you.","affirmation":"My body knows how to prepare for new beginnings."},{"week":2,"size":"A dream taking shape","sizePhrase":"still a dream taking shape","emoji":"🌙","lengthCm":0,"weightG":0,"lego":"The first page of the instructions","motivation":"The pieces are being sorted quietly, one possibility at a time.","milestone":"Ovulation approaches as an egg matures and gets ready to meet its match.","fatherNote":"Plan one calm evening this week with no screens, just the two of you.","quote":"Hope is the first brick of every home.","husbandMessage":"I love the life we already have, and the one we’re dreaming of.","affirmation":"I am open, patient, and ready."},{"week":3,"size":"Pinhead","sizePhrase":"smaller than a pinhead","emoji":"📍","lengthCm":0.01,"weightG":0,"lego":"The tip of a minifigure’s wand","motivation":"Somewhere small and unseen, a whole story just clicked into place.","milestone":"Fertilization: a single cell holding a complete blueprint begins dividing into a tiny ball of cells.","fatherNote":"The blueprint is set, and half of it is you. Start practicing patience.","quote":"The smallest beginnings carry the biggest blueprints.","husbandMessage":"We may not know it yet, but everything just changed.","affirmation":"I trust the quiet work happening inside me.","keyMilestone":"Conception"},{"week":4,"size":"Poppy seed","sizePhrase":"the size of a poppy seed","emoji":null,"lengthCm":0.1,"weightG":0,"lego":"A tiny jewel piece","motivation":"Your body is laying the foundation, even before you feel a thing.","milestone":"The blastocyst implants in the uterine lining and the pregnancy hormone hCG starts to rise.","fatherNote":"If the test is positive, the first job is simple: hold her hand and celebrate.","quote":"Foundations are built in silence and celebrated forever.","husbandMessage":"Two lines on a test, and a lifetime ahead of us.","affirmation":"I welcome this new life with an open heart."},{"week":5,"size":"Sesame seed","sizePhrase":"the size of a sesame seed","emoji":null,"lengthCm":0.2,"weightG":0,"lego":"Half a LEGO stud","motivation":"Tiny as a sesame seed, yet already drafting the most important design of all.","milestone":"The neural tube, the beginning of the brain and spinal cord, forms alongside a simple heart tube.","fatherNote":"Book the first prenatal appointment together and put it on both calendars.","quote":"Great designs begin as a single careful line.","husbandMessage":"I’m already proud of you, and this is only week five.","affirmation":"I nourish myself, and in doing so I nourish my baby."},{"week":6,"size":"Lentil","sizePhrase":"the size of a lentil","emoji":"🫘","lengthCm":0.5,"weightG":0,"lego":"1 LEGO stud","motivation":"Every heartbeat is another tiny brick in the beautiful family you’re building.","milestone":"The heart has started beating.","fatherNote":"You’re already doing an amazing job.","quote":"A heartbeat is the sound of a promise being kept.","husbandMessage":"Our little brick has a heartbeat, and mine skips every time I think about it.","affirmation":"I am strong, I am calm, and I am growing a miracle.","keyMilestone":"First heartbeat"},{"week":7,"size":"Blueberry","sizePhrase":"the size of a blueberry","emoji":"🫐","lengthCm":1.3,"weightG":1,"lego":"2 LEGO studs","motivation":"Two studs today, a whole world tomorrow. Growth this fast deserves extra rest.","milestone":"Arm and leg buds are sprouting and the brain is growing at an astonishing pace.","fatherNote":"Morning sickness may arrive now. Keep crackers by the bed and stay patient.","quote":"Rest is not stopping; it is how strong things are built.","husbandMessage":"Sleep in. I’ve got breakfast, and the dishes.","affirmation":"It’s okay to slow down; my body is working hard."},{"week":8,"size":"Raspberry","sizePhrase":"the size of a raspberry","emoji":null,"lengthCm":1.6,"weightG":1,"lego":"A 1×2 LEGO plate","motivation":"Fingers and toes are forming. Someday they’ll hold yours.","milestone":"Tiny fingers and toes begin to form, and baby starts making its first spontaneous movements.","fatherNote":"Learn the early-pregnancy foods to avoid so she never has to check alone.","quote":"Little hands learn to build long before they can reach.","husbandMessage":"I can’t wait to count those ten tiny fingers with you.","affirmation":"I am exactly where I need to be."},{"week":9,"size":"Cherry","sizePhrase":"the size of a cherry","emoji":"🍒","lengthCm":2.3,"weightG":2,"lego":"A 1×3 LEGO brick","motivation":"Every essential system has started. You’re nurturing an entire blueprint.","milestone":"The embryonic tail is gone, all essential organs have begun to form, and tiny earlobes appear.","fatherNote":"Start a shared photo album. The bump journey deserves a record.","quote":"Nothing worthwhile is built all at once, and nothing worthwhile is built alone.","husbandMessage":"You make carrying the whole world look graceful.","affirmation":"I give myself grace on the hard days."},{"week":10,"size":"Strawberry","sizePhrase":"the size of a strawberry","emoji":"🍓","lengthCm":3.1,"weightG":4,"lego":"A classic 2×4 LEGO brick","motivation":"Officially a fetus: the classic brick stage, solid and full of promise.","milestone":"Baby graduates from embryo to fetus; vital organs are in place and beginning to function.","fatherNote":"Ask what would make her days easier right now, then do it without being reminded.","quote":"Every masterpiece has a moment when the shape becomes clear.","husbandMessage":"Ten weeks in and I already know you’re going to be an incredible mom.","affirmation":"My baby and I are a team.","keyMilestone":"Embryo becomes fetus"},{"week":11,"size":"Fig","sizePhrase":"the size of a fig","emoji":null,"lengthCm":4.1,"weightG":7,"lego":"A minifigure’s treasure chest","motivation":"Small hands now open and close, practicing for a lifetime of holding on.","milestone":"Baby can open and close tiny fists, and tooth buds are forming beneath the gums.","fatherNote":"Read up on the first-trimester screening tests so you can talk them through together.","quote":"The treasure isn’t the chest; it’s what we learn to keep inside.","husbandMessage":"You’re my favorite person to dream about the future with.","affirmation":"I am allowed to feel every emotion this journey brings."},{"week":12,"size":"Lime","sizePhrase":"the size of a lime","emoji":"🍋‍🟩","lengthCm":5.4,"weightG":14,"lego":"A LEGO race-car wheel","motivation":"Reflexes are switching on. Your baby is already responding to the world.","milestone":"Reflexes develop and the kidneys begin producing urine; the riskiest early weeks are behind you.","fatherNote":"Many couples share the news around now. Let her lead on who hears first.","quote":"Wheels turn slowly at first, then carry you far.","husbandMessage":"However we share the news, I’ll be smiling right next to you.","affirmation":"I release worry and choose trust."},{"week":13,"size":"Lemon","sizePhrase":"the size of a lemon","emoji":"🍋","lengthCm":7.4,"weightG":23,"lego":"A LEGO minifigure, standing proud","motivation":"The first trimester is complete. One big section of the build is done.","milestone":"Vocal cords form and fingerprints begin to appear; the first trimester comes to a close.","fatherNote":"Mark the end of the first trimester with something small but thoughtful.","quote":"Finishing one chapter is how the next one finds its courage.","husbandMessage":"Here’s to the first trimester. You carried it like a champion.","affirmation":"I honor how far I’ve already come.","keyMilestone":"First trimester complete"},{"week":14,"size":"Nectarine","sizePhrase":"the size of a nectarine","emoji":"🍑","lengthCm":8.7,"weightG":43,"lego":"A minifigure riding a LEGO horse","motivation":"Second-trimester energy is arriving. Enjoy every brick of it.","milestone":"Baby can squint, frown, and grimace as facial muscles get to work; the second trimester begins.","fatherNote":"Energy often returns now. Plan a walk, a date, or a weekend outing together.","quote":"Joy returns gently, like sunlight through a window.","husbandMessage":"Seeing you smile more this week has made my whole month.","affirmation":"I welcome energy, lightness, and laughter."},{"week":15,"size":"Apple","sizePhrase":"the size of an apple","emoji":"🍎","lengthCm":10.1,"weightG":70,"lego":"A LEGO go-kart","motivation":"Bones are hardening. You’re building strength, inside and out.","milestone":"The skeleton is hardening and baby can sense light through closed eyelids.","fatherNote":"Keep the fruit bowl full and the calcium-rich snacks within reach.","quote":"Strength is quiet, steady, and built from the inside.","husbandMessage":"You’re stronger than you know, and I see it every day.","affirmation":"I am building strength with every breath."},{"week":16,"size":"Avocado","sizePhrase":"the size of an avocado","emoji":"🥑","lengthCm":11.6,"weightG":100,"lego":"A LEGO sports car","motivation":"Your baby is making tiny expressions, maybe even practicing a smile.","milestone":"Eyes make slow side-to-side movements and the nervous system is wiring up fast.","fatherNote":"Talk to the bump. Your voice will soon be one baby recognizes.","quote":"Some smiles are practiced long before anyone sees them.","husbandMessage":"I talked to our baby today. I think they’re going to like my jokes.","affirmation":"I am connected to my baby in every moment."},{"week":17,"size":"Pomegranate","sizePhrase":"the size of a pomegranate","emoji":null,"lengthCm":13,"weightG":140,"lego":"A LEGO food truck","motivation":"Little fat stores are forming, growing cozy for the world ahead.","milestone":"Fat stores begin to develop and the umbilical cord grows thicker and stronger.","fatherNote":"Take over one recurring chore for good. Make it yours, no reminders needed.","quote":"Comfort is something we build for the people we love.","husbandMessage":"Your comfort is my favorite project.","affirmation":"I deserve comfort and care."},{"week":18,"size":"Bell pepper","sizePhrase":"the size of a bell pepper","emoji":"🫑","lengthCm":14.2,"weightG":190,"lego":"A LEGO garden shed","motivation":"Your baby can hear now. Every word you say is part of the soundtrack.","milestone":"Hearing develops, and you may begin to feel the first gentle flutters of movement.","fatherNote":"Start a nightly ritual: a story, a song, or simply telling baby about your day.","quote":"Love is learned first as a voice in the dark.","husbandMessage":"I’ll read to our little one every night, even the boring parts.","affirmation":"My voice is my baby’s first lullaby.","keyMilestone":"Baby can hear"},{"week":19,"size":"Mango","sizePhrase":"the size of a mango","emoji":"🥭","lengthCm":15.3,"weightG":240,"lego":"A LEGO lighthouse","motivation":"A protective coating is wrapping your baby’s skin, nature’s own finishing coat.","milestone":"A creamy coating called vernix forms to protect baby’s skin, and the senses keep refining.","fatherNote":"Research car seats and strollers. It’s a great project to own.","quote":"Care is the finishing touch that makes anything last.","husbandMessage":"You protect our baby so beautifully. Let me protect you.","affirmation":"I am a safe and loving home."},{"week":20,"size":"Banana","sizePhrase":"the size of a banana","emoji":"🍌","lengthCm":25.6,"weightG":300,"lego":"A LEGO family house","motivation":"Halfway there. The house is framed and the windows are in.","milestone":"The halfway point. Many parents have the anatomy scan now while baby practices swallowing.","fatherNote":"Be there for the anatomy scan. It’s one of the best appointments of the whole journey.","quote":"Halfway is where the dream becomes a plan.","husbandMessage":"Twenty weeks of you being amazing. Twenty more to go, together.","affirmation":"I celebrate every step of this journey.","keyMilestone":"Halfway"},{"week":21,"size":"Carrot","sizePhrase":"the length of a carrot","emoji":"🥕","lengthCm":26.7,"weightG":360,"lego":"A LEGO fire station","motivation":"Those kicks are getting stronger. Your baby is saying hello.","milestone":"Movements grow stronger and more frequent, and taste buds are now working.","fatherNote":"Rest your hand on the bump in quiet moments. Patience gets rewarded with a kick.","quote":"Hello is the first word of every great story.","husbandMessage":"I felt our baby kick, and I swear I heard applause.","affirmation":"I feel my baby, and my baby feels my love."},{"week":22,"size":"Papaya","sizePhrase":"the size of a papaya","emoji":null,"lengthCm":27.8,"weightG":430,"lego":"A LEGO hot-air balloon","motivation":"Eyebrows and eyelids are in place. Your baby’s face is coming together beautifully.","milestone":"Eyebrows and eyelids are fully formed and baby’s grip grows stronger.","fatherNote":"Start a list of baby-name ideas and keep the debate fun, not fierce.","quote":"Every face we love began as a careful sketch.","husbandMessage":"I keep imagining whose eyebrows our baby will have. I hope yours.","affirmation":"I am patient with myself and this beautiful process."},{"week":23,"size":"Grapefruit","sizePhrase":"the size of a grapefruit","emoji":null,"lengthCm":28.9,"weightG":501,"lego":"A LEGO steam train","motivation":"Your baby may already recognize your voice. You’re their favorite sound.","milestone":"Hearing sharpens and baby may recognize familiar voices while the lungs keep developing.","fatherNote":"Sing something, anything. Baby is now an attentive audience.","quote":"Home is the sound of a voice you know by heart.","husbandMessage":"When I speak and our baby moves, I feel like the luckiest man alive.","affirmation":"My love surrounds my baby every day."},{"week":24,"size":"Ear of corn","sizePhrase":"the length of an ear of corn","emoji":"🌽","lengthCm":30,"weightG":600,"lego":"A LEGO pirate ship","motivation":"A major milestone: the lungs are preparing for their very first breath.","milestone":"Lungs grow branches and begin producing surfactant, an important viability milestone.","fatherNote":"Ask about the glucose screening test and offer to drive her to it.","quote":"Every great voyage begins with a long, careful preparation.","husbandMessage":"We’ve reached a big milestone, and I’m so proud of us.","affirmation":"My body is doing exactly what it was designed to do.","keyMilestone":"Viability"},{"week":25,"size":"Cauliflower","sizePhrase":"the size of a cauliflower","emoji":"🥦","lengthCm":34.6,"weightG":660,"lego":"A LEGO space shuttle","motivation":"Your baby’s hair is gaining color and texture. Little details make the masterpiece.","milestone":"Baby responds to familiar voices and hair begins to gain color and texture.","fatherNote":"Plan the nursery layout together. Measure twice, assemble once.","quote":"Details are where love leaves its fingerprints.","husbandMessage":"Let me handle the heavy lifting on the nursery. You just dream it.","affirmation":"I am creating a peaceful space for my family."},{"week":26,"size":"Zucchini","sizePhrase":"the length of a zucchini","emoji":"🥒","lengthCm":35.6,"weightG":760,"lego":"A LEGO rocket on its launch pad","motivation":"Those eyes are beginning to open. Soon they’ll find yours.","milestone":"Eyes begin to open and hearing is now fully formed.","fatherNote":"Sign up for a childbirth or newborn-care class together.","quote":"The first thing we learn to see is the light we’ve been given.","husbandMessage":"I can’t wait for the moment our baby opens their eyes and sees you.","affirmation":"I am preparing with confidence and calm."},{"week":27,"size":"Head of lettuce","sizePhrase":"the size of a head of lettuce","emoji":"🥬","lengthCm":36.6,"weightG":875,"lego":"A LEGO starship","motivation":"The second trimester closes today. The rocket is fully assembled.","milestone":"The brain is very active and baby settles into regular sleep and wake cycles; the second trimester ends.","fatherNote":"Check in on her sleep. A body pillow can be the best gift of the month.","quote":"Every journey has a moment when you look back and feel proud.","husbandMessage":"Two trimesters down. You’re incredible, and I’m with you to the finish.","affirmation":"I trust my body through every stage.","keyMilestone":"Second trimester complete"},{"week":28,"size":"Eggplant","sizePhrase":"the size of an eggplant","emoji":"🍆","lengthCm":37.6,"weightG":1000,"lego":"A LEGO space station","motivation":"Welcome to the third trimester, the final and most magical stretch.","milestone":"The third trimester begins; baby can blink and enters REM sleep, perhaps even dreaming.","fatherNote":"Start packing the hospital bag together and practice the route to the hospital.","quote":"Dreams grow brighter the closer we get to them.","husbandMessage":"I wonder what our baby dreams about. I hope it’s us.","affirmation":"I welcome the final chapter with courage."},{"week":29,"size":"Butternut squash","sizePhrase":"the size of a butternut squash","emoji":null,"lengthCm":38.6,"weightG":1150,"lego":"A LEGO medieval castle","motivation":"Kicks are getting stronger. Your little builder is staying busy.","milestone":"Muscles and lungs continue maturing and kicks grow stronger.","fatherNote":"Learn how to count kicks so you both know baby’s normal rhythm.","quote":"Walls are built brick by brick; love is built moment by moment.","husbandMessage":"Every kick reminds me how lucky we are.","affirmation":"I am attentive and connected to my baby."},{"week":30,"size":"Cabbage","sizePhrase":"the size of a cabbage","emoji":null,"lengthCm":39.9,"weightG":1300,"lego":"A LEGO castle with a drawbridge","motivation":"Your baby’s bone marrow now makes blood cells. Such careful engineering.","milestone":"Bone marrow takes over producing red blood cells.","fatherNote":"Offer foot rubs freely. Swollen feet deserve a hero.","quote":"Gentleness is a strength that holds everything together.","husbandMessage":"Ten weeks left, and I love you more with every one of them.","affirmation":"I deserve rest, support, and tenderness."},{"week":31,"size":"Coconut","sizePhrase":"the size of a coconut","emoji":"🥥","lengthCm":41.1,"weightG":1500,"lego":"A LEGO dragon","motivation":"Your baby can turn their head and take in every sense. A tiny explorer.","milestone":"Baby can turn their head side to side and is processing information from all the senses.","fatherNote":"Install the car seat early and have it checked if you can.","quote":"Curiosity is the first sign of a brave heart.","husbandMessage":"I’m ready to explore the whole world with our little one.","affirmation":"I am becoming the parent my child needs."},{"week":32,"size":"Jicama","sizePhrase":"the size of a jicama","emoji":null,"lengthCm":42.4,"weightG":1700,"lego":"A LEGO dragon with wings spread wide","motivation":"Your baby is practicing breathing, rehearsing for the grand entrance.","milestone":"Baby practices breathing motions, and fingernails and toenails are fully grown.","fatherNote":"Prepare freezer meals now. Future you will be grateful.","quote":"Practice is just love that refuses to give up.","husbandMessage":"You’re doing beautifully, and our baby is lucky to be practicing in there.","affirmation":"I breathe deeply and calmly, and my baby feels my peace."},{"week":33,"size":"Pineapple","sizePhrase":"the size of a pineapple","emoji":"🍍","lengthCm":43.7,"weightG":1900,"lego":"A LEGO treehouse village","motivation":"Your antibodies are being shared. You’re already protecting your baby.","milestone":"Bones keep hardening while the skull stays soft, and your antibodies help build baby’s immune system.","fatherNote":"Organize the paperwork: insurance, leave forms, and hospital pre-registration.","quote":"Protection is a quiet kind of love that never takes a day off.","husbandMessage":"You’re already a mother in every way that matters.","affirmation":"My love is a shield around my baby."},{"week":34,"size":"Cantaloupe","sizePhrase":"the size of a cantaloupe","emoji":"🍈","lengthCm":45,"weightG":2100,"lego":"A LEGO theme-park ride","motivation":"The nervous system is maturing. Your baby is getting ready for life outside.","milestone":"The central nervous system matures and the lungs continue preparing for life outside.","fatherNote":"Keep your phone charged and your schedule flexible from here on.","quote":"Readiness is not a feeling; it’s the sum of small preparations.","husbandMessage":"Whatever the day brings, I’ll be ready and right by your side.","affirmation":"I am ready for what is coming."},{"week":35,"size":"Honeydew melon","sizePhrase":"the size of a honeydew melon","emoji":null,"lengthCm":46.2,"weightG":2400,"lego":"A LEGO city skyline","motivation":"The kidneys are complete. Now it’s mostly about growing cozy and strong.","milestone":"Kidneys are fully developed and most growth now is weight gain.","fatherNote":"Run through the birth plan together so you can advocate for her wishes.","quote":"A city is built one light at a time, until the whole sky glows.","husbandMessage":"Your strength is the brightest thing in our story.","affirmation":"I trust my instincts and my care team."},{"week":36,"size":"Romaine lettuce","sizePhrase":"the length of a romaine lettuce","emoji":null,"lengthCm":47.4,"weightG":2600,"lego":"A LEGO Ferris wheel","motivation":"Your baby may be settling lower, getting into position for the big day.","milestone":"Baby may drop lower into the pelvis and the gums become firmer.","fatherNote":"Weekly appointments may begin now. Go to as many as you can.","quote":"Every circle comes back around to the people who matter most.","husbandMessage":"I’ll be at every appointment. You’ll never do this alone.","affirmation":"I am surrounded by love and support."},{"week":37,"size":"Swiss chard","sizePhrase":"the length of a bunch of Swiss chard","emoji":null,"lengthCm":48.6,"weightG":2900,"lego":"A LEGO amusement park","motivation":"Early term. Your baby is practicing gripping, sucking, and breathing.","milestone":"Baby reaches early term and practices gripping, sucking, and inhaling.","fatherNote":"Double-check the hospital bag and add the chargers and snacks you’ll forget.","quote":"The best things arrive when the work of love is complete.","husbandMessage":"Any day now, and my heart is already full.","affirmation":"I am calm, prepared, and confident.","keyMilestone":"Early term"},{"week":38,"size":"Leek","sizePhrase":"the length of a leek","emoji":null,"lengthCm":49.8,"weightG":3100,"lego":"A LEGO castle kingdom","motivation":"Every organ is ready. Your baby is simply waiting for the perfect moment.","milestone":"Organs are ready for the outside world and the protective vernix begins to shed.","fatherNote":"Be the calm one. Learn the signs of labor so she doesn’t have to think.","quote":"Waiting is the final act of patience before the miracle.","husbandMessage":"Thank you for building our family with such love and courage.","affirmation":"I welcome my baby whenever they are ready."},{"week":39,"size":"Mini watermelon","sizePhrase":"the size of a mini watermelon","emoji":"🍉","lengthCm":50.7,"weightG":3300,"lego":"A grand LEGO cathedral","motivation":"Full term. Your masterpiece is nearly ready to be revealed.","milestone":"Baby is full term and the brain is still growing rapidly.","fatherNote":"Rest when you can. The best support is a well-rested partner.","quote":"Some moments are worth every single piece it took to build them.","husbandMessage":"Soon there will be three of us, and I’ve never been more ready.","affirmation":"My body was made for this moment.","keyMilestone":"Full term"},{"week":40,"size":"Small pumpkin","sizePhrase":"the size of a small pumpkin","emoji":"🎃","lengthCm":51.2,"weightG":3500,"lego":"The complete masterpiece","motivation":"The final brick is ready. Your masterpiece is complete, and so is your family.","milestone":"Due date. Baby is ready to meet you whenever the moment arrives.","fatherNote":"Take a breath. You’ve built something beautiful together. Now go meet your baby.","quote":"Every block, every day, every heartbeat led to this.","husbandMessage":"Thank you for the greatest gift. I love you both endlessly.","affirmation":"I am ready to meet my baby with open arms.","keyMilestone":"Due date"}];
+const BR = { red: "#D9263D", blue: "#1F63C6", yellow: "#F5B700", green: "#189A57" };
+const SEQ = [BR.red, BR.blue, BR.yellow, BR.green];
+const TRI = { 1: BR.red, 2: BR.blue, 3: BR.green };
+const TRIS = [{ id: 1, label: "First trimester", s: 1, e: 13 }, { id: 2, label: "Second trimester", s: 14, e: 27 }, { id: 3, label: "Third trimester", s: 28, e: 40 }];
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const icon = (id, size = 18, extra = "") => `<svg class="icon" style="width:${size}px;height:${size}px;${extra}" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- storage ---------- */
+const KEY = "babybrick:v1:";
+const store = {
+  get(k, f) { try { const v = localStorage.getItem(KEY + k); return v ? JSON.parse(v) : f; } catch (e) { return f; } },
+  set(k, v) { try { localStorage.setItem(KEY + k, JSON.stringify(v)); return null; } catch (e) { return (e && e.name === "QuotaExceededError") ? "Storage is full. Export a backup, then remove a few large photos to make room." : "This browser didn’t allow saving. Changes will last until you close the page."; } },
+  usage() { let t = 0; try { for (const k of ["settings", "memories", "theme", "chat", "kicks", "kickLive", "contractions", "appts", "bag", "names"]) { const v = localStorage.getItem(KEY + k); if (v) t += (v.length + k.length) * 2; } } catch (e) {} return t; }
+};
+
+/* ---------- dates ---------- */
+const pad = (n) => String(n).padStart(2, "0");
+const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const P = (iso) => iso.split("-").map(Number);
+const fromISO = (iso) => { const [y, m, d] = P(iso); return new Date(y, m - 1, d, 12); };
+const addDays = (iso, n) => { const [y, m, d] = P(iso); return toISO(new Date(y, m - 1, d + n, 12)); };
+const diffDays = (a, b) => { const [y1, m1, d1] = P(a), [y2, m2, d2] = P(b); return Math.round((Date.UTC(y2, m2 - 1, d2) - Date.UTC(y1, m1 - 1, d1)) / 864e5); };
+const today = () => toISO(new Date());
+const validISO = (v) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(fromISO(v));
+const FMT = {
+  long: new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" }),
+  short: new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }),
+  weekday: new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long" }),
+  mon: new Intl.DateTimeFormat("en-GB", { month: "short" })
+};
+const fmt = (iso, s = "long") => FMT[s].format(fromISO(iso));
+const triOf = (w) => (w <= 13 ? 1 : w <= 27 ? 2 : 3);
+const ord = (n) => ["", "1st", "2nd", "3rd"][n];
+const W = (n) => WEEKS[Math.min(40, Math.max(1, n)) - 1];
+const fmtLen = (cm) => cm <= 0 ? "Not measurable yet" : cm < 1 ? `${Math.round(cm * 100) / 10} mm` : `${cm.toFixed(1)} cm`;
+const fmtW = (g) => g <= 0 ? "Under 1 g" : g < 1000 ? `${g} g` : `${(g / 1000).toFixed(2).replace(/0$/, "")} kg`;
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+/** Size told in bricks: "the size of 1 LEGO stud". */
+const legoSize = (w) => { const l = w.lego.replace(/^(A|An|The) /, (m) => m.toLowerCase()); return w.week <= 2 ? `still ${l}` : w.week === 40 ? l : `the size of ${l}`; };
+/* True LEGO dimensions: stud pitch 8 mm, 2×4 brick 32 mm long, minifigure about 40 mm tall. */
+function realScale(w) {
+  const L = w.lengthCm;
+  if (L <= 0) return { text: "Too small to measure yet. The first stud is coming soon.", unit: null };
+  const r1 = (x) => (Math.round(x * 10) / 10).toString().replace(/\.0$/, "");
+  if (L < 3.2) return { text: L / 0.8 < 1 ? `About ${r1(L / 0.8)} of a stud long. One stud is 8 mm.` : `About ${r1(L / 0.8)} studs long. One stud is 8 mm.`, unit: "stud", per: 0.8 };
+  if (L < 16) return { text: `About ${r1(L / 3.2)} classic 2×4 bricks end to end. Each brick is 32 mm.`, unit: "brick", per: 3.2 };
+  return { text: `About ${r1(L / 4)} minifigures tall, or ${Math.round(L / 3.2)} classic 2×4 bricks end to end.`, unit: "brick", per: 3.2 };
+}
+function scaleBar(w) {
+  const r = realScale(w);
+  if (!r.unit) return `<div class="scale"><p class="lbl">Real LEGO scale</p><p style="margin:6px 0 0;font-weight:600">${r.text}</p></div>`;
+  const n = Math.max(1, Math.ceil(w.lengthCm / r.per)), total = n * r.per;
+  const cell = 100 / n, studs = r.unit === "stud" ? 1 : 4;
+  const bricks = Array.from({ length: n }, (_, i) => `<span style="width:calc(${cell}% - 2px);background:${SEQ[i % 4]}">${`<i style="width:${studs === 1 ? 50 : 16}%"></i>`.repeat(studs)}</span>`).join("");
+  return `<div class="scale"><p class="lbl">Real LEGO scale</p><p style="margin:6px 0 0;font-weight:600;line-height:1.35">${r.text}</p>
+    <div class="lane"><div class="baby" style="width:${(w.lengthCm / total * 100).toFixed(1)}%" aria-hidden="true"></div></div>
+    <div class="bricks" aria-hidden="true">${bricks}</div>
+    <div class="cap tab"><span>Baby, ${fmtLen(w.lengthCm)}</span><span>${n} ${r.unit === "stud" ? (n === 1 ? "stud" : "studs") : (n === 1 ? "brick" : "bricks")}, ${r.per * n >= 10 ? (r.per * n).toFixed(1) + " cm" : Math.round(r.per * n * 10) + " mm"}</span></div></div>`;
+}
+function legoLink(w) {
+  if (w.week < 11 || w.week === 40) return "";
+  const q = w.lego.replace(/^(A|An|The) /i, "").replace(/LEGO ?/g, "").replace(/,.*$/, "").trim();
+  return `<a class="legolink" href="https://www.lego.com/en-us/search?q=${encodeURIComponent(q)}" target="_blank" rel="noopener">${icon("ext", 14)}Browse real sets like this on LEGO.com</a>`;
+}
+const brickCount = (w) => Math.min(10, 1 + Math.floor(w.week / 4));
+const legoVisual = (w, scale = 1) => { const n = brickCount(w); return cluster(n, Math.round((n > 6 ? 20 : n > 3 ? 26 : 34) * scale)); };
+
+function computeStats(lmp) {
+  const days = Math.max(0, diffDays(lmp, today()));
+  const week = Math.min(40, Math.max(1, Math.floor(days / 7)));
+  const left = Math.max(0, 280 - days);
+  return { lmp, due: addDays(lmp, 280), days, week, dow: days % 7, progress: Math.min(100, days / 2.8), tri: triOf(week), left, weeksLeft: Math.floor(left / 7), extra: left % 7, nextStart: addDays(lmp, (Math.floor(days / 7) + 1) * 7) };
+}
+
+/* ---------- state ---------- */
+const savedSettings = store.get("settings", null);
+const SETUP_LMP = "2026-09-23"; // 6 weeks + 5 days on 9 November 2026
+const SETTINGS_VERSION = 2;
+const state = {
+  lmp: savedSettings && savedSettings.v === SETTINGS_VERSION && validISO(savedSettings.lmp) ? savedSettings.lmp : SETUP_LMP,
+  nickname: (savedSettings && savedSettings.babyNickname) || "Little Brick",
+  selected: 6,
+  filter: "all",
+  memories: (store.get("memories", []) || []).filter((m) => m && m.id && m.type),
+  theme: Object.assign({ mode: "system", palette: "classic" }, store.get("theme", {}))
+};
+let S = computeStats(state.lmp);
+state.selected = S.week;
+if (!savedSettings || savedSettings.v !== SETTINGS_VERSION) saveSettings();
+function saveSettings() { const err = store.set("settings", { v: SETTINGS_VERSION, lmp: state.lmp, babyNickname: state.nickname, reminderHour: 9 }); if (err) status(err); }
+
+/* ---------- bricks ---------- */
+function shade(hex, p) {
+  const n = parseInt(hex.slice(1), 16), t = p < 0 ? 0 : 255, a = Math.abs(p) / 100;
+  const mix = (c) => Math.round((t - c) * a + c);
+  const r = mix((n >> 16) & 255), g = mix((n >> 8) & 255), b = mix(n & 255);
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+function brick(color, studs = 2, width = 48) {
+  const u = 20, w = studs * u, bh = 16, sh = 4.5, h = bh + sh;
+  let s = "";
+  for (let i = 0; i < studs; i++) s += `<rect x="${i * u + 4.5}" y=".6" width="11" height="${sh + 2}" rx="1.8" fill="${shade(color, -10)}"/><rect x="${i * u + 4.5}" y="0" width="11" height="3.2" rx="1.6" fill="${shade(color, 16)}"/>`;
+  return `<svg viewBox="0 0 ${w} ${h}" width="${width}" height="${(width * h / w).toFixed(1)}" aria-hidden="true" style="display:block">${s}<rect x="0" y="${sh}" width="${w}" height="${bh}" rx="2.6" fill="${color}"/><rect x=".4" y="${sh + bh - 3.6}" width="${w - .8}" height="3.6" rx="1.6" fill="${shade(color, -18)}"/><rect x="2" y="${sh + 1.2}" width="${w - 4}" height="1.3" rx=".65" fill="#fff" opacity=".3"/></svg>`;
+}
+function cluster(count, size) {
+  let rows = [], rem = Math.max(1, count), per = 1;
+  while (rem > 0) { const t = Math.min(per, rem); rows.push(t); rem -= t; per++; }
+  let i = 0;
+  return `<div class="cluster" aria-hidden="true">${rows.map((n) => `<div>${Array.from({ length: n }, () => brick(SEQ[i++ % 4], 2, size)).join("")}</div>`).join("")}</div>`;
+}
+
+/* ---------- confetti ---------- */
+const cv = $("#confetti"); let confRaf = 0;
+function celebrate(intensity = 1) {
+  if (reduceMotion()) return;
+  const ctx = cv.getContext("2d"); if (!ctx) return;
+  cancelAnimationFrame(confRaf);
+  const dpr = Math.min(devicePixelRatio || 1, 2), Wd = innerWidth, H = innerHeight;
+  cv.width = Wd * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const parts = Array.from({ length: Math.round(110 * intensity) }, (_, i) => {
+    const L = i % 2 === 0;
+    return { x: L ? -10 : Wd + 10, y: H * (.55 + Math.random() * .25), vx: (L ? 1 : -1) * (6 + Math.random() * 9), vy: -(10 + Math.random() * 12), w: 12 + Math.random() * 8, h: 7 + Math.random() * 4, r: Math.random() * 3, vr: (Math.random() - .5) * .35, c: SEQ[Math.floor(Math.random() * 4)] };
+  });
+  const rr = (x, y, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); ctx.fill(); };
+  const t0 = performance.now();
+  const tick = (t) => {
+    const el = t - t0; ctx.clearRect(0, 0, Wd, H);
+    const a = Math.max(0, 1 - Math.max(0, el - 1600) / 1000);
+    for (const p of parts) {
+      p.vy += .36; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.globalAlpha = a; ctx.fillStyle = p.c;
+      rr(-p.w / 2, -p.h / 2, p.w, p.h, 2); rr(-p.w / 4 - 2, -p.h / 2 - 3, 4, 3.5, 1); rr(p.w / 4 - 2, -p.h / 2 - 3, 4, 3.5, 1);
+      ctx.restore();
+    }
+    if (el < 2600) confRaf = requestAnimationFrame(tick); else ctx.clearRect(0, 0, Wd, H);
+  };
+  confRaf = requestAnimationFrame(tick);
+}
+
+/* ---------- count up ---------- */
+function countUp(el, to, dec = 0, dur = 1000) {
+  if (!el) return;
+  const from = Number(el.dataset.v || 0);
+  el.dataset.v = to;
+  if (reduceMotion() || from === to) { el.textContent = to.toFixed(dec); return; }
+  const t0 = performance.now();
+  const step = (t) => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = (from + (to - from) * e).toFixed(dec); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+
+/* ---------- theme ---------- */
+const PALETTES = [
+  { id: "classic", label: "Classic bricks", sw: ["#D9263D", "#F5B700", "#1F63C6", "#189A57"] },
+  { id: "ocean", label: "Ocean", sw: ["#1F63C6", "#5FB7E5", "#DCEBFF"] },
+  { id: "blossom", label: "Blossom", sw: ["#D6457A", "#F7A8C4", "#F3E9FF"] },
+  { id: "garden", label: "Garden", sw: ["#189A57", "#A9D86E", "#F1F7DA"] }
+];
+const MODES = [["light", "Light", "sun"], ["dark", "Dark", "moon"], ["system", "Auto", "auto"]];
+const mq = matchMedia("(prefers-color-scheme: dark)");
+const isDark = () => state.theme.mode === "dark" || (state.theme.mode === "system" && mq.matches);
+function applyTheme() {
+  const r = document.documentElement;
+  if (state.theme.mode === "system") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", state.theme.mode);
+  r.setAttribute("data-palette", state.theme.palette);
+  $("#modeToggle").innerHTML = icon(isDark() ? "moon" : "sun");
+  $$(".modeSeg").forEach((el) => el.innerHTML = MODES.map(([id, l, ic]) => `<button role="radio" aria-checked="${state.theme.mode === id}" data-mode-set="${id}" style="display:flex;align-items:center;justify-content:center;gap:6px">${icon(ic, 16)}${l}</button>`).join(""));
+  $$(".paletteSeg").forEach((el) => el.innerHTML = PALETTES.map((p) => `<button role="radio" aria-checked="${state.theme.palette === p.id}" data-pal="${p.id}"><span class="sw">${p.sw.map((c) => `<i style="background:${c}"></i>`).join("")}</span><span>${p.label}</span></button>`).join(""));
+  store.set("theme", state.theme);
+}
+mq.addEventListener("change", applyTheme);
+document.addEventListener("click", (e) => {
+  const m = e.target.closest("[data-mode-set]"); if (m) { state.theme.mode = m.dataset.modeSet; applyTheme(); }
+  const p = e.target.closest("[data-pal]"); if (p) { state.theme.palette = p.dataset.pal; applyTheme(); }
+});
+$("#modeToggle").addEventListener("click", () => { state.theme.mode = isDark() ? "light" : "dark"; applyTheme(); });
+const pop = $("#popover"), palBtn = $("#paletteBtn");
+palBtn.addEventListener("click", (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; palBtn.setAttribute("aria-expanded", String(!pop.hidden)); });
+document.addEventListener("pointerdown", (e) => { if (!pop.hidden && !pop.contains(e.target) && e.target !== palBtn && !palBtn.contains(e.target)) { pop.hidden = true; palBtn.setAttribute("aria-expanded", "false"); } });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { pop.hidden = true; closeSheet(); } });
+
+/* ---------- navigation: screens + sub-tabs ---------- */
+const VIEWS = ["today", "journey", "ask", "tools", "memories", "studio"];
+const GO = { today: ["today"], home: ["today"], dashboard: ["today", "glance"], words: ["today", "words"], countdown: ["today", "countdown"], journey: ["journey"], weeks: ["journey", "weeks"], timeline: ["journey", "timeline"], growth: ["journey", "growth"], ask: ["ask"], tools: ["tools"], memories: ["memories"], studio: ["studio"], dates: ["studio", "dates"], reminders: ["studio", "calendar"] };
+const subState = { today: "glance", journey: "weeks", studio: "dates" };
+let currentView = "today";
+function setSub(group, name) {
+  subState[group] = name;
+  $$(`.subtabs[data-group="${group}"] [data-subtab]`).forEach((b) => b.setAttribute("aria-selected", String(b.dataset.subtab === name)));
+  $$(`.subview[data-group="${group}"]`).forEach((v) => v.classList.toggle("on", v.dataset.name === name));
+  afterShow(group, name);
+}
+function goView(view, sub, updateHash = true) {
+  if (!VIEWS.includes(view)) view = "today";
+  const changed = view !== currentView;
+  currentView = view;
+  $$(".view").forEach((v) => v.classList.toggle("on", v.dataset.view === view));
+  $$(".nav button, .dock button").forEach((b) => b.classList.toggle("on", (GO[b.dataset.go] || [])[0] === view));
+  if (subState[view] !== undefined) setSub(view, sub || subState[view]); else afterShow(view);
+  if (updateHash && location.hash !== "#" + view) { try { history.replaceState(null, "", "#" + view); } catch (e) { location.hash = view; } }
+  if (changed || sub) window.scrollTo({ top: 0, behavior: "auto" });
+}
+function afterShow(group, name) {
+  const key = name ? `${group}:${name}` : group;
+  if (key === "journey:timeline") centerTimeline();
+  if (key === "journey:weeks") renderRail();
+  if (key === "ask") { const c = $("#chat"); c.scrollTop = c.scrollHeight; }
+}
+document.addEventListener("click", (e) => {
+  const st = e.target.closest("[data-subtab]"); if (st) { setSub(st.closest(".subtabs").dataset.group, st.dataset.subtab); window.scrollTo({ top: 0 }); return; }
+  const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); const [v, sub] = GO[g.dataset.go] || ["today"]; goView(v, sub); pop.hidden = true; }
+});
+addEventListener("hashchange", () => { const h = location.hash.slice(1); if (VIEWS.includes(h) && h !== currentView) goView(h, null, false); });
+const onScroll = () => $("#topbar").classList.toggle("scrolled", scrollY > 12);
+addEventListener("scroll", onScroll, { passive: true }); onScroll();
+const revealIO = new IntersectionObserver((ents) => ents.forEach((x) => { if (x.isIntersecting) { x.target.classList.add("in"); revealIO.unobserve(x.target); } }), { rootMargin: "0px 0px -60px 0px" });
+$$(".sec-head").forEach((h) => revealIO.observe(h));
+const once = new WeakSet();
+function whenVisible(el, fn) { if (!el) return; if (once.has(el)) { fn(); return; } const io = new IntersectionObserver((ents) => { if (ents[0].isIntersecting) { once.add(el); io.disconnect(); fn(); } }); io.observe(el); }
+
+/* ---------- actions ---------- */
+function setCurrentWeek(w) { w = Math.min(40, Math.max(1, w)); state.lmp = addDays(today(), -(w * 7 + S.dow)); saveSettings(); refresh(); selectWeek(w, false); celebrate(w === 40 ? 2 : 1); }
+function setLmp(lmp) { state.lmp = lmp; saveSettings(); refresh(); selectWeek(S.week, false); celebrate(1); }
+function selectWeek(w, party = true) {
+  w = Math.min(40, Math.max(1, w));
+  const changed = w !== state.selected;
+  state.selected = w;
+  renderRail(); renderDetail(); renderTimelineSel(); renderGrowth(); renderWords();
+  if (changed && party) celebrate(w === 40 ? 2 : 1);
+}
+function refresh() { S = computeStats(state.lmp); if (typeof renderChat === "function" && !chat.turns.length) renderChat(); renderHeader(); renderHero(); renderDashboard(); renderTimeline(); renderCountdown(); renderReminders(); }
+
+/* ---------- header / hero ---------- */
+function renderHeader() { $("#weekPill").textContent = `Week ${S.week}`; }
+let towerFirst = true;
+function renderHero() {
+  const c = W(S.week);
+  $("#growthCard").innerHTML = `<div class="glow"></div>
+    <div style="position:relative;display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+      <div><p class="lbl">This week, ${esc(state.nickname)} is</p><h3>${esc(cap(legoSize(c)))}</h3></div>
+      <span class="chip weekbadge tab">Week ${c.week}</span></div>
+    <div class="sizeorb"><span style="font-size:0">${legoVisual(c, 1.6)}</span></div>
+    <dl class="stats2" style="position:relative;margin:0">
+      <div class="stat"><dt>Length</dt><dd class="tab">${fmtLen(c.lengthCm)}</dd></div>
+      <div class="stat"><dt>Weight</dt><dd class="tab">${fmtW(c.weightG)}</dd></div>
+      ${c.week < 40 ? `<div class="stat wide">${brick(BR.yellow, 2, 34)}<div><dt>Next week</dt><dd style="font-size:16px">${esc(W(c.week + 1).lego)}</dd></div></div>` : ""}
+    </dl>
+    <div class="stat" style="position:relative;margin-top:10px">${scaleBar(c)}</div>
+    <p class="lbl" style="position:relative;margin-top:14px;font-weight:500">${S.week} weeks and ${S.dow} ${S.dow === 1 ? "day" : "days"} along</p>`;
+  $("#towerCount").textContent = `${S.week} of 40 bricks`;
+  const t = $("#tower"); let rows = "";
+  for (let r = 0; r < 10; r++) {
+    let cells = "";
+    for (let col = 0; col < 4; col++) {
+      const n = r * 4 + col + 1, built = n <= S.week, cur = n === S.week;
+      const drop = towerFirst && !reduceMotion() && built ? ` dropin" style="--dl:${(.35 + n * .035).toFixed(3)}s` : "";
+      cells += `<button class="tb${cur ? " cur" : ""}${drop}" data-tw="${n}" aria-label="Week ${n}${cur ? ", current week" : built ? ", built" : ""}">${built ? brick(SEQ[(n - 1 + r) % 4], 2, 46) : `<svg viewBox="0 0 40 20.5" width="46" height="23.6" style="display:block;opacity:.6"><rect x=".75" y="4.5" width="38.5" height="15.25" rx="2.6" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="3 3"/></svg>`}</button>`;
+    }
+    rows += `<div class="row" style="transform:translateX(${r % 2 ? 14 : -14}px)">${cells}</div>`;
+  }
+  t.innerHTML = rows; t.setAttribute("aria-label", `Brick tower: ${S.week} of 40 weeks built`);
+  towerFirst = false;
+  requestAnimationFrame(() => { $("#heroBar").style.width = S.progress + "%"; });
+  $("#heroDue").textContent = `Due ${fmt(S.due)}`;
+  const num = $("#wkNum"); num.textContent = S.week; num.classList.remove("flipnum"); void num.offsetWidth; num.classList.add("flipnum");
+  $("#wkMinus").disabled = S.week <= 1; $("#wkPlus").disabled = S.week >= 40;
+}
+$("#tower").addEventListener("click", (e) => { const b = e.target.closest("[data-tw]"); if (b) { selectWeek(+b.dataset.tw, false); goView("journey", "weeks"); celebrate(.8); } });
+$("#wkMinus").addEventListener("click", () => setCurrentWeek(S.week - 1));
+$("#wkPlus").addEventListener("click", () => setCurrentWeek(S.week + 1));
+
+/* due date calculator */
+let calcMode = "lmp";
+function calcResult() {
+  const v = $("#calcDate").value;
+  if (!validISO(v)) return { msg: `<span class="muted">Choose a date to see your due date.</span>`, lmp: null };
+  const lmp = calcMode === "lmp" ? v : addDays(v, -280);
+  if (lmp > today()) return { msg: `<span class="err">That date is in the future. Choose the first day of your most recent period.</span>`, lmp: null };
+  if (addDays(lmp, 300) < today()) return { msg: `<span class="err">That date is more than 42 weeks ago. Check the date and try again.</span>`, lmp: null };
+  return { msg: `Estimated due date <b>${fmt(addDays(lmp, 280))}</b><span class="muted" style="display:block">Conception around ${fmt(addDays(lmp, 14))}</span>`, lmp };
+}
+function renderCalc() { const r = calcResult(); $("#calcOut").innerHTML = r.msg; $("#calcApply").disabled = !r.lmp; $("#calcLabel").textContent = calcMode === "lmp" ? "First day of your last period" : "Due date from your doctor"; }
+$("#calcSeg").addEventListener("click", (e) => { const b = e.target.closest("[data-mode]"); if (!b) return; calcMode = b.dataset.mode; $$("#calcSeg button").forEach((x) => x.setAttribute("aria-checked", String(x === b))); $("#calcDate").value = calcMode === "lmp" ? S.lmp : S.due; $("#calcMsg").textContent = ""; renderCalc(); });
+$("#calcDate").addEventListener("input", () => { $("#calcMsg").textContent = ""; renderCalc(); });
+$("#calcApply").addEventListener("click", () => { const r = calcResult(); if (!r.lmp) return; setLmp(r.lmp); $("#calcMsg").textContent = `Saved. Your due date is ${fmt(S.due)}.`; });
+
+/* ---------- dashboard ---------- */
+function renderDashboard() {
+  const c = W(S.week), t = TRIS[S.tri - 1];
+  const cards = [
+    { cls: "hero-m", label: "Current week", tone: TRI[S.tri], front: `<div class="mega tab">${S.week}</div><p class="muted" style="margin:8px 0 0">${S.week} weeks, ${S.dow} ${S.dow === 1 ? "day" : "days"}</p><div style="margin-top:22px"><div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600"><span>Progress</span><span class="tab"><span data-count="${S.progress}">0</span>%</span></div><div class="bar" style="height:12px;margin-top:8px"><i data-bar="${S.progress}" style="background:var(--accent)"></i></div></div>`, back: `<p style="margin:0;font-size:18px;font-weight:700">${esc(c.milestone)}</p><p class="muted" style="margin:12px 0 0">Next week begins ${fmt(S.nextStart, "weekday")}.</p>` },
+    { label: "Progress", front: `<div class="val tab"><span data-count="${S.progress}">0</span>%</div>`, back: `${S.days} of 280 days completed.` },
+    { label: "Trimester", front: `<div class="val">${ord(S.tri)}</div><div class="tri3">${[1, 2, 3].map((x) => `<i style="background:${x <= S.tri ? TRI[x] : "var(--surface-2)"}"></i>`).join("")}</div>`, back: `${t.label} runs from week ${t.s} to week ${t.e}.` },
+    { label: "Weeks left", front: `<div class="val tab" data-count="${S.weeksLeft}">0</div>`, back: `${S.weeksLeft} weeks and ${S.extra} ${S.extra === 1 ? "day" : "days"} to go.` },
+    { label: "Days left", front: `<div class="val tab" data-count="${S.left}">0</div>`, back: `Due ${fmt(S.due, "weekday")}.` },
+    { cls: "w2m w2", label: "Baby size", front: `<div style="display:flex;align-items:center;gap:16px">${legoVisual(c, .8)}<div class="val" style="font-size:28px">${esc(c.lego)}</div></div>`, back: `About ${fmtLen(c.lengthCm)} long and ${fmtW(c.weightG).toLowerCase()} this week.` },
+    { cls: "w2m w2", label: "Due date", front: `<div class="val" style="font-size:30px">${fmt(S.due)}</div>`, back: `${fmt(S.due, "weekday")}. About ${S.weeksLeft} weeks and ${S.extra} ${S.extra === 1 ? "day" : "days"} from today.` }
+  ];
+  const b = $("#bento");
+  b.innerHTML = cards.map((x, i) => `<button class="metric card ${x.cls || ""}" data-flip="${i}" aria-pressed="false" aria-label="${x.label}. Tap for details.">${x.tone ? `<span class="tone" style="background:${x.tone}"></span>` : ""}<span class="ml">${x.label}</span><div class="face" data-front>${x.front}</div><div class="face back" data-back hidden>${x.back}</div></button>`).join("");
+  whenVisible(b, () => { $$("[data-count]", b).forEach((el) => countUp(el, Number(el.dataset.count), 0, 1200)); $$("[data-bar]", b).forEach((el) => requestAnimationFrame(() => el.style.width = el.dataset.bar + "%")); });
+}
+$("#bento").addEventListener("click", (e) => {
+  const c = e.target.closest("[data-flip]"); if (!c) return;
+  const f = $("[data-front]", c), bk = $("[data-back]", c), flipped = bk.hidden;
+  f.hidden = flipped; bk.hidden = !flipped; c.setAttribute("aria-pressed", String(flipped));
+  const shown = flipped ? bk : f; shown.style.animation = "none"; void shown.offsetWidth; shown.style.animation = "";
+  if (!flipped) { $$("[data-count]", f).forEach((el) => { el.dataset.v = 0; countUp(el, Number(el.dataset.count), 0, 700); }); }
+});
+
+/* ---------- week tracker ---------- */
+function renderRail() {
+  const r = $("#rail");
+  r.innerHTML = WEEKS.map((w) => { const on = w.week === state.selected, cur = w.week === S.week; return `<button role="tab" aria-selected="${on}" class="wchip tab${on ? " on" : ""}${w.week <= S.week ? " done" : ""}" data-wk="${w.week}" ${on ? `style="background:${TRI[triOf(w.week)]}"` : ""}>${w.week}${cur ? `<span class="dot" aria-label="current week"></span>` : ""}</button>`; }).join("");
+  const chip = $(`[data-wk="${state.selected}"]`, r);
+  if (chip && r.clientWidth) r.scrollTo({ left: chip.offsetLeft - r.clientWidth / 2 + chip.clientWidth / 2, behavior: "smooth" });
+}
+$("#rail").addEventListener("click", (e) => { const b = e.target.closest("[data-wk]"); if (b) selectWeek(+b.dataset.wk); });
+function renderDetail() {
+  const w = W(state.selected), tri = triOf(w.week), cur = w.week === S.week, past = w.week < S.week;
+  const n = Math.min(10, 1 + Math.floor(w.week / 4));
+  $("#detail").innerHTML = `<article class="detail" aria-live="polite">
+    <div class="card" style="position:relative;overflow:hidden;border-radius:32px;padding:26px">
+      <div class="studbg"></div>
+      <div style="position:relative">
+        <div style="display:flex;flex-wrap:wrap;gap:8px"><span class="chip" style="background:${TRI[tri]};color:#fff">${["First", "Second", "Third"][tri - 1]} trimester</span><span class="chip" style="background:var(--surface-2);color:var(--muted)">${cur ? "This week" : past ? "Completed" : `Starts ${fmt(addDays(S.lmp, w.week * 7), "short")}`}</span></div>
+        <h3 class="wtitle tab">Week ${w.week}</h3>
+        <div class="legobox" style="flex-direction:column;align-items:stretch"><div style="display:flex;align-items:flex-end;justify-content:space-between;gap:14px"><div><p class="lbl">If it were a LEGO build</p><p style="margin:4px 0 0;font-size:22px;font-weight:700;line-height:1.25;letter-spacing:-.01em">${esc(w.lego)}</p><p class="muted tab" style="margin:6px 0 0;font-size:14px">${fmtLen(w.lengthCm)}, ${fmtW(w.weightG)}</p></div>${cluster(n, n > 6 ? 22 : 30)}</div>${scaleBar(w)}${legoLink(w)}</div>
+        <div class="navrow"><button class="btn soft" data-step="-1" ${w.week <= 1 ? "disabled" : ""}>${icon("left")}Week ${Math.max(1, w.week - 1)}</button><button class="btn" data-step="1" ${w.week >= 40 ? "disabled" : ""}>Week ${Math.min(40, w.week + 1)}${icon("right")}</button></div>
+      </div>
+    </div>
+    <div style="display:grid;gap:16px">
+      <div class="note card"><p class="k" style="color:var(--brick-red)">${icon("pulse", 16)}Development</p><p class="v">${esc(w.milestone)}</p></div>
+      <div class="note" style="background:var(--accent);color:#fff;box-shadow:var(--shadow)"><p class="k" style="color:rgba(255,255,255,.82)">${icon("spark", 16)}For mom</p><p class="v">${esc(w.motivation)}</p></div>
+      <div class="note card"><p class="k" style="color:var(--brick-blue)">${icon("quote", 16)}Father’s note</p><p class="vs">${esc(w.fatherNote)}</p></div>
+    </div></article>`;
+}
+$("#detail").addEventListener("click", (e) => { const b = e.target.closest("[data-step]"); if (b) selectWeek(state.selected + Number(b.dataset.step)); });
+
+/* ---------- timeline ---------- */
+const COL = 64;
+function renderTimeline() {
+  const tl = $("#tl"); tl.style.width = COL * 40 + 48 + "px";
+  const flags = WEEKS.filter((w) => w.keyMilestone).map((w) => `<button class="flag" data-wk="${w.week}" style="left:${(w.week - .5) * COL}px"><b>${esc(w.keyMilestone)}</b>${icon("flag", 14, "color:var(--muted)")}</button>`).join("");
+  const nodes = WEEKS.map((w) => { const c = TRI[triOf(w.week)], done = w.week < S.week, cur = w.week === S.week; return `<button class="node${done ? " done" : ""}${cur ? " cur" : ""}" data-wk="${w.week}" style="left:${(w.week - .5) * COL}px;--c:${c}" aria-label="Week ${w.week}${cur ? ", current week" : ""}"${cur ? ' aria-current="step"' : ""}><i class="tab" style="${done || cur ? `background:${c};border-color:${c}` : ""}">${w.week}</i></button>`; }).join("");
+  tl.innerHTML = `<div class="bands">${TRIS.map((t) => `<div style="width:${(t.e - t.s + 1) * COL}px"><span style="background:color-mix(in oklab,${TRI[t.id]} 14%,transparent);color:${TRI[t.id]}">${t.label}</span></div>`).join("")}</div>
+    <div class="flags">${flags}</div>
+    <div class="track"><div class="base"></div><div class="fill rainbow" id="tlFill"></div>${nodes}</div>`;
+  whenVisible(tl, () => requestAnimationFrame(() => { $("#tlFill").style.width = ((S.week - .5) / 40 * 100) + "%"; }));
+  centerTimeline();
+  renderTimelineSel();
+}
+function centerTimeline() { const sc = $("#tlScroll"); if (sc && sc.clientWidth) sc.scrollLeft = Math.max(0, (S.week - 1) * COL - sc.clientWidth / 2 + COL / 2); }
+function renderTimelineSel() { $$("#tl .node").forEach((n) => n.classList.toggle("sel", +n.dataset.wk === state.selected)); }
+$("#tl").addEventListener("click", (e) => { const b = e.target.closest("[data-wk]"); if (b) selectWeek(+b.dataset.wk); });
+
+/* ---------- growth ---------- */
+const MAXL = 51.2;
+const orbSize = (w, max, min) => w.lengthCm <= 0 ? min * .7 : min + (max - min) * Math.pow(w.lengthCm / MAXL, .55);
+const orbStyle = (w, size) => { const c = TRI[triOf(w.week)]; return `width:${size}px;height:${size}px;background:radial-gradient(circle at 32% 28%,#ffffffcc,${c}55 38%,${c} 100%);box-shadow:0 30px 60px -20px ${c}aa,inset 0 -12px 30px ${c}`; };
+let stageBuilt = false;
+function renderGrowth() {
+  const w = W(state.selected), prev = w.week > 1 ? W(w.week - 1) : null, next = w.week < 40 ? W(w.week + 1) : null;
+  const stage = $("#stage"), size = orbSize(w, 230, 46), orbiters = Math.min(8, 2 + Math.floor(w.week / 6));
+  if (!stageBuilt) { stage.innerHTML = `<div style="transform:translateZ(60px)"><div class="orb" id="orb"></div></div><div class="orbit" id="orbit"></div><div class="tag" style="transform:translateZ(40px)"><div class="glass" id="stageTag"></div><span id="stageEmo"></span></div>`; stageBuilt = true; }
+  const orb = $("#orb"); orb.setAttribute("style", orbStyle(w, size));
+  orb.innerHTML = w.week >= 6 ? `<span class="heart">${icon("heart", Math.max(14, Math.round(size * .16)))}</span>` : "";
+  $("#orbit").innerHTML = Array.from({ length: orbiters }, (_, i) => { const a = i / orbiters * Math.PI * 2, rad = 120 + (i % 2) * 28; return `<span style="transform:translate(${(Math.cos(a) * rad - 14).toFixed(1)}px,${(Math.sin(a) * rad - 8).toFixed(1)}px)">${brick(SEQ[i % 4], i % 3 === 0 ? 1 : 2, i % 3 === 0 ? 18 : 30)}</span>`; }).join("");
+  $("#stageTag").innerHTML = `<p class="lbl" style="font-size:12px">Week ${w.week}</p><p style="margin:0;font-weight:700">${esc(w.lego)}</p>`;
+  $("#stageEmo").innerHTML = "";
+  $("#slider").value = w.week; $("#sliderVal").textContent = w.week; $("#slider").setAttribute("aria-valuetext", `Week ${w.week}, ${w.lego}`);
+  const gc = prev ? w.lengthCm - prev.lengthCm : 0, gg = prev ? w.weightG - prev.weightG : 0;
+  $("#gstats").innerHTML = `<div class="stat" style="background:var(--surface-2)"><dt>Length</dt><dd class="tab">${fmtLen(w.lengthCm)}</dd>${gc > 0 ? `<dd class="gain tab">${icon("up", 13)}${gc.toFixed(1)} cm since last week</dd>` : ""}</div><div class="stat" style="background:var(--surface-2)"><dt>Weight</dt><dd class="tab">${fmtW(w.weightG)}</dd>${gg > 0 ? `<dd class="gain tab">${icon("up", 13)}${fmtW(gg)} since last week</dd>` : ""}</div>`;
+  const cc = (x, label, em) => x ? `<div class="cmpc${em ? " em" : ""}"><p class="lbl" style="font-size:12px;${em ? "color:var(--accent)" : ""}">${label}</p><div class="ob"><div class="orb" style="${orbStyle(x, orbSize(x, 96, 18))}"></div></div><p style="margin:0;font-weight:700">Week ${x.week}</p><p class="muted" style="margin:0;font-size:13px;line-height:1.3">${esc(x.lego)}</p><p class="muted tab" style="margin:4px 0 0;font-size:12px">${fmtLen(x.lengthCm)}</p></div>` : `<div class="cmpc empty"><p style="margin:0;font-weight:600">${label}</p><p style="margin:0">${label === "Previous" ? "This is where it all begins" : "The finished masterpiece"}</p></div>`;
+  $("#cmp").innerHTML = cc(prev, "Previous") + cc(w, "Selected", true) + cc(next, "Next");
+  const bars = $("#bars");
+  if (!bars.children.length) { bars.innerHTML = WEEKS.map((x) => `<button data-wk="${x.week}" aria-label="Week ${x.week}"><i></i></button>`).join(""); whenVisible(bars, () => paintBars(true)); }
+  else paintBars(false);
+}
+let barsShown = false;
+function paintBars(first) {
+  if (first) barsShown = true; if (!barsShown) return;
+  $$("#bars button").forEach((b, i) => { const x = WEEKS[i], t = triOf(x.week), el = b.firstChild, sel = x.week === state.selected;
+    el.style.background = sel ? "var(--ink)" : (t === 1 ? BR.red : t === 2 ? BR.yellow : BR.green);
+    el.style.opacity = sel ? 1 : x.week < state.selected ? .9 : .3;
+    if (first) el.style.transitionDelay = (x.week * .015) + "s";
+    requestAnimationFrame(() => el.style.height = Math.max(3, x.lengthCm / MAXL * 100) + "%"); });
+}
+$("#bars").addEventListener("click", (e) => { const b = e.target.closest("[data-wk]"); if (b) selectWeek(+b.dataset.wk, false); });
+$("#slider").addEventListener("input", (e) => selectWeek(+e.target.value, false));
+const sw = $("#stageWrap");
+sw.addEventListener("pointermove", (e) => { if (reduceMotion()) return; const r = sw.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; $("#stage").style.setProperty("--ry", (x * 36).toFixed(1) + "deg"); $("#stage").style.setProperty("--rx", (-y * 28).toFixed(1) + "deg"); });
+sw.addEventListener("pointerleave", () => { $("#stage").style.setProperty("--ry", "0deg"); $("#stage").style.setProperty("--rx", "0deg"); });
+
+/* ---------- words ---------- */
+function renderWords() {
+  const w = W(state.selected), d = (40 - w.week) * 7;
+  $("#wordsBody").innerHTML = `<div class="wgrid">
+    <figure class="quote"><div style="position:absolute;right:-18px;top:-10px;transform:rotate(12deg);opacity:.9" aria-hidden="true">${brick(BR.yellow, 3, 110)}</div>
+      <p class="lbl" style="position:relative">For her, week ${w.week}</p>
+      <blockquote>“${esc(w.quote)}”</blockquote>
+      <figcaption><i style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></i>${d > 0 ? `${d} days until we meet you` : "Any day now, we meet you"}</figcaption></figure>
+    <div style="display:grid;gap:16px">
+      <div class="card pad" style="border-radius:28px"><p class="lbl" style="color:var(--brick-blue)">From your husband</p><p style="margin:10px 0 0;font-size:20px;font-weight:700;line-height:1.35;letter-spacing:-.01em;text-wrap:pretty" id="hm">${esc(w.husbandMessage)}</p><button class="btn soft" style="width:100%;margin-top:18px" id="sendHer">${icon("share")}Send to her</button><p class="lbl" style="margin-top:8px;font-size:13px;min-height:1em" id="sendMsg"></p></div>
+      <div class="inkcard"><p style="margin:0;font-size:14px;font-weight:600;opacity:.7">Today’s affirmation</p><p style="margin:10px 0 0;font-size:24px;font-weight:800;line-height:1.2;letter-spacing:-.02em;text-wrap:balance">${esc(w.affirmation)}</p></div>
+      <div style="display:flex;gap:8px"><button class="btn soft" style="flex:1" data-step="-1" ${w.week <= 1 ? "disabled" : ""}>${icon("left")}Previous</button><button class="btn soft" style="flex:1" data-step="1" ${w.week >= 40 ? "disabled" : ""}>Next${icon("right")}</button></div>
+    </div></div>`;
+}
+$("#wordsBody").addEventListener("click", async (e) => {
+  const st = e.target.closest("[data-step]"); if (st) { selectWeek(state.selected + Number(st.dataset.step)); return; }
+  if (e.target.closest("#sendHer")) {
+    const w = W(state.selected), text = `${w.husbandMessage}\n\nWeek ${w.week}: ${w.affirmation}`, out = $("#sendMsg");
+    try { if (navigator.share) { await navigator.share({ text }); return; } } catch (err) { if (err && err.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(text); out.textContent = "Copied. Paste it into a message to her."; }
+    catch (err) { const r = document.createRange(); r.selectNodeContents($("#hm")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); out.textContent = "Message selected. Tap Copy, then paste it into a message to her."; }
+  }
+});
+
+/* ---------- countdown ---------- */
+function ringSVG(val, color) { const size = innerWidth < 640 ? Math.min(112, Math.floor((innerWidth - 80) / 3)) : 168, sw = size < 140 ? 10 : 14, r = (size - sw) / 2, c = 2 * Math.PI * r; return `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="${sw}"/><circle class="p" cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${c.toFixed(1)}" data-off="${(c * (1 - Math.min(1, Math.max(0, val)))).toFixed(1)}"/></svg>`; }
+function renderCountdown() {
+  $("#cdSub").textContent = `Due ${fmt(S.due, "weekday")}.`;
+  const R = $("#rings");
+  R.innerHTML = [[S.left / 280, BR.red, S.left, "days to go", "", `${S.left} days until the due date`], [S.weeksLeft / 40, BR.blue, S.weeksLeft, "weeks left", "", `${S.weeksLeft} weeks remaining`], [S.progress / 100, BR.green, Math.round(S.progress), "built", "%", `${Math.round(S.progress)} percent complete`]]
+    .map(([v, c, n, l, suf, aria]) => `<div class="ring" role="img" aria-label="${aria}">${ringSVG(v, c)}<div class="in"><div><div class="n tab"><span data-count="${n}">0</span>${suf}</div><div class="lbl">${l}</div></div></div></div>`).join("");
+  whenVisible(R, () => { $$("circle.p", R).forEach((c) => requestAnimationFrame(() => c.style.strokeDashoffset = c.dataset.off)); $$("[data-count]", R).forEach((el) => countUp(el, Number(el.dataset.count), 0, 1400)); });
+  const fin = S.week >= 36, due = S.week >= 40;
+  $("#finale").innerHTML = fin ? `<div class="finale"><div><p style="margin:0;font-size:24px;font-weight:800;letter-spacing:-.02em">${due ? "It’s due-date week" : "The final stretch"}</p><p style="margin:4px 0 0;opacity:.88">${due ? "The last brick is in place. Your baby could arrive any moment." : "Only a few bricks left. Keep the hospital bag by the door."}</p></div><button class="btn soft" style="background:#fff;color:#1B1A33" id="partyBtn">${icon("party")}Celebrate</button></div>` : "";
+  if (fin) { const k = "celebrated-" + S.week; if (!sessionFlags[k]) { sessionFlags[k] = 1; whenVisible($("#finale"), () => setTimeout(() => celebrate(due ? 2.2 : 1.2), 500)); } }
+  $("#tkTitle").textContent = S.week < 40 ? `Week ${S.week + 1} begins in` : "Your due date";
+  $("#tkDate").textContent = fmt(S.week < 40 ? S.nextStart : S.due, "weekday");
+  tick();
+}
+const sessionFlags = {};
+$("#finale").addEventListener("click", (e) => { if (e.target.closest("#partyBtn")) celebrate(2); });
+function tick() {
+  const target = fromISO(S.week < 40 ? S.nextStart : S.due); target.setHours(0, 0, 0, 0);
+  const diff = Math.max(0, target - Date.now()), d = Math.floor(diff / 864e5), h = Math.floor(diff % 864e5 / 36e5), m = Math.floor(diff % 36e5 / 6e4), s = Math.floor(diff % 6e4 / 1e3);
+  $("#ticker").innerHTML = [[d, "days"], [h, "hours"], [m, "min"], [s, "sec"]].map(([v, l]) => `<div><b>${pad(v)}</b><span>${l}</span></div>`).join("");
+}
+setInterval(() => { tick(); const t = today(); if (computeStats(state.lmp).week !== S.week) refresh(); }, 1000);
+
+/* ---------- memories ---------- */
+const TYPES = {
+  photo: { label: "Photo", plural: "Photos", ic: "camera", color: BR.red, need: true, ph: ["Bump photo, week 12", "What was happening the day you took it?"] },
+  ultrasound: { label: "Ultrasound", plural: "Ultrasounds", ic: "scan", color: BR.blue, need: true, ph: ["First scan", "What did you see? What did the sonographer say?"] },
+  journal: { label: "Journal entry", plural: "Journal", ic: "pen", color: BR.yellow, need: false, ph: ["How I’m feeling", "Write about this week: cravings, worries, little joys."] },
+  milestone: { label: "Milestone", plural: "Milestones", ic: "flag", color: BR.green, need: false, ph: ["First kick", "Where were you? Who felt it first?"] },
+  doctor: { label: "Doctor’s note", plural: "Doctor’s notes", ic: "steth", color: "#7A5AF8", need: false, ph: ["Week 12 checkup", "Measurements, advice, questions for next time."] }
+};
+const ORDER = ["photo", "ultrasound", "journal", "milestone", "doctor"];
+const kb = (b) => b < 1048576 ? Math.round(b / 1024) + " KB" : (b / 1048576).toFixed(1) + " MB";
+function sortedMems() { return [...state.memories].sort((a, b) => a.date === b.date ? b.createdAt - a.createdAt : a.date < b.date ? 1 : -1); }
+function renderMemories() {
+  const counts = { all: state.memories.length }; state.memories.forEach((m) => counts[m.type] = (counts[m.type] || 0) + 1);
+  $("#filters").innerHTML = ["all", ...ORDER].map((f) => `<button role="tab" aria-selected="${state.filter === f}" class="${state.filter === f ? "on" : ""}" data-f="${f}">${f === "all" ? "All" : TYPES[f].plural}${counts[f] ? ` <span class="tab" style="opacity:.65">${counts[f]}</span>` : ""}</button>`).join("");
+  const list = sortedMems().filter((m) => state.filter === "all" || m.type === state.filter);
+  $("#memBody").innerHTML = list.length === 0
+    ? `<div class="card empty" style="border-radius:28px;margin-top:20px"><div class="typeicons">${ORDER.map((t) => `<span style="background:${TYPES[t].color}">${icon(TYPES[t].ic, 20)}</span>`).join("")}</div><p style="margin:0;max-width:22rem;font-size:18px;font-weight:700">${state.filter === "all" ? "Start your memory book with a first photo, scan or note." : `No ${TYPES[state.filter].plural.toLowerCase()} yet. Add the first one.`}</p><button class="btn" data-add>${icon("plus")}Add a memory</button></div>`
+    : `<div class="mgrid">${list.map((m) => { const T = TYPES[m.type]; return `<article class="mem card">${m.image ? `<img src="${m.image}" alt="${esc(m.title)}" loading="lazy" ${m.type === "ultrasound" ? 'style="background:#000"' : ""}>` : `<div style="height:8px;background:${T.color}"></div>`}<div class="mb"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="chip" style="background:color-mix(in oklab,${T.color} 14%,transparent);color:${T.color}">${icon(T.ic, 13)}${T.label}</span><span class="lbl tab" style="font-size:12px">Week ${m.week}</span></div><h4>${esc(m.title)}</h4>${m.text ? `<p>${esc(m.text)}</p>` : ""}<div class="mf"><time datetime="${m.date}">${fmt(m.date)}</time><span data-del="${m.id}"><button class="btn soft sm" style="min-height:34px;padding:4px 10px" data-ask aria-label="Delete ${esc(m.title)}">${icon("trash", 15)}</button></span></div></div></article>`; }).join("")}</div>`;
+  renderBumps();
+  const u = store.usage(), budget = 5 * 1048576;
+  $("#usageBar").style.width = Math.min(100, u / budget * 100) + "%";
+  $("#usageTxt").textContent = `${kb(u)} of about ${kb(budget)} used in this browser`;
+}
+$("#filters").addEventListener("click", (e) => { const b = e.target.closest("[data-f]"); if (b) { state.filter = b.dataset.f; renderMemories(); } });
+$("#memBody").addEventListener("click", (e) => {
+  const holder = e.target.closest("[data-del]"); if (!holder) return;
+  if (e.target.closest("[data-ask]")) { holder.innerHTML = `<button class="btn soft sm" style="min-height:34px;padding:4px 10px" data-keep>Keep</button> <button class="btn sm" style="--b:var(--brick-red);min-height:34px;padding:4px 10px" data-yes>Delete</button>`; return; }
+  if (e.target.closest("[data-keep]")) { renderMemories(); return; }
+  if (e.target.closest("[data-yes]")) { const next = state.memories.filter((m) => m.id !== holder.dataset.del); const err = store.set("memories", next); if (err) { $("#memErr").textContent = err; return; } state.memories = next; $("#memErr").textContent = ""; renderMemories(); }
+});
+
+/* sheet */
+let draft = { type: "photo", image: null };
+function openSheet() {
+  draft = { type: state.filter === "all" ? "photo" : state.filter, image: null };
+  $("#memTitle").value = ""; $("#memText").value = ""; $("#memDate").value = today(); $("#sheetErr").textContent = "";
+  $("#memWeek").innerHTML = WEEKS.map((w) => `<option value="${w.week}" ${w.week === S.week ? "selected" : ""}>Week ${w.week}</option>`).join("");
+  renderSheet(); $("#sheet").hidden = false; document.body.style.overflow = "hidden";
+}
+function closeSheet() { $("#sheet").hidden = true; document.body.style.overflow = ""; }
+function renderSheet() {
+  const T = TYPES[draft.type];
+  $("#types").innerHTML = ORDER.map((t) => `<button role="radio" aria-checked="${t === draft.type}" data-type="${t}" ${t === draft.type ? `style="background:${TYPES[t].color}"` : ""}>${icon(TYPES[t].ic, 18)}${TYPES[t].label.split(" ")[0]}</button>`).join("");
+  $("#imgLabel").textContent = T.need ? "Image" : "Image (optional)";
+  $("#memTitle").placeholder = T.ph[0]; $("#memText").placeholder = T.ph[1];
+  $("#imgSlot").innerHTML = draft.image ? `<div style="position:relative;border-radius:18px;overflow:hidden"><img src="${draft.image}" alt="Selected image" style="width:100%;max-height:260px;object-fit:cover"><button class="btn soft sm" style="position:absolute;right:8px;top:8px" data-rmimg>Remove</button></div>` : `<label for="memFile" class="drop">${icon("img", 24)}<span id="dropTxt">Choose a photo or scan</span></label>`;
+  validate();
+}
+function validate() { const T = TYPES[draft.type]; $("#memSave").disabled = draft.busy || (T.need ? !draft.image : !($("#memTitle").value.trim() || $("#memText").value.trim())); }
+document.addEventListener("click", (e) => { if (e.target.closest("[data-add]")) openSheet(); if (e.target.closest("[data-close]")) closeSheet(); });
+$("#types").addEventListener("click", (e) => { const b = e.target.closest("[data-type]"); if (b) { draft.type = b.dataset.type; renderSheet(); } });
+$("#imgSlot").addEventListener("click", (e) => { if (e.target.closest("[data-rmimg]")) { draft.image = null; renderSheet(); } });
+["#memTitle", "#memText"].forEach((s) => $(s).addEventListener("input", validate));
+$("#memFile").addEventListener("change", async (e) => {
+  const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return;
+  draft.busy = true; validate(); const dt = $("#dropTxt"); if (dt) dt.textContent = "Preparing image…";
+  try { draft.image = await compress(f, draft.type === "ultrasound" ? 1200 : 1080, .78); $("#sheetErr").textContent = ""; }
+  catch (err) { $("#sheetErr").textContent = err.message || "This image couldn’t be added."; }
+  draft.busy = false; renderSheet();
+});
+function compress(file, max, q) {
+  return new Promise((res, rej) => {
+    if (!file.type.startsWith("image/")) return rej(new Error("Choose an image file (JPG, PNG, HEIC or WebP)."));
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => { const s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas"); c.width = Math.max(1, Math.round(img.naturalWidth * s)); c.height = Math.max(1, Math.round(img.naturalHeight * s)); const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL("image/jpeg", q)); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("This image couldn’t be opened. Try a JPG or PNG.")); };
+    img.src = url;
+  });
+}
+$("#memSave").addEventListener("click", () => {
+  const T = TYPES[draft.type];
+  const m = { id: (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)), type: draft.type, title: $("#memTitle").value.trim() || T.label, text: $("#memText").value.trim(), date: validISO($("#memDate").value) ? $("#memDate").value : today(), week: +$("#memWeek").value, image: draft.image || undefined, createdAt: Date.now() };
+  const next = [m, ...state.memories], err = store.set("memories", next);
+  if (err) { $("#sheetErr").textContent = err; return; }
+  state.memories = next; closeSheet(); renderMemories(); celebrate(.6);
+});
+
+/* ---------- reminders ---------- */
+const SMALL = new Set(["a", "an", "the", "of", "on", "with", "its", "and", "in"]);
+const titleLego = (t) => t.split(" ").map((w, i) => w === "LEGO" ? w : (i > 0 && SMALL.has(w.toLowerCase())) ? w.toLowerCase() : w.split("-").map((p) => p ? p[0].toUpperCase() + p.slice(1) : p).join("-")).join(" ").replace(/^(A|An|The) /, (m) => m.toLowerCase());
+const remTitle = (w) => `Week ${w.week}: Your Baby is Now ${titleLego(w.lego)}`;
+function renderReminders() {
+  const ups = WEEKS.filter((w) => addDays(S.lmp, w.week * 7) >= today()).slice(0, 5);
+  $("#remList").innerHTML = `<p style="margin:0 0 6px;font-weight:700">Upcoming reminders</p>` + (ups.length ? ups.map((w) => { const d = addDays(S.lmp, w.week * 7); return `<div class="rem"><div class="d"><b class="tab">${P(d)[2]}</b><span>${FMT.mon.format(fromISO(d))}</span></div><div><p style="margin:0;font-weight:700;line-height:1.3">${esc(remTitle(w))}</p><p class="muted" style="margin:4px 0 0;font-size:14px">This week your baby is ${esc(legoSize(w))}. ${esc(w.motivation)}</p></div></div>`; }).join("") : `<p class="muted">All forty reminders are behind you. Welcome to the world, little one.</p>`);
+  const c = W(S.week);
+  $("#notifPreview").innerHTML = `<p style="margin:0;font-weight:700">🧱 BabyBrick Update</p><p class="muted" style="margin:6px 0 0;white-space:pre-line;line-height:1.4">Week ${c.week}\n\nCurrent Size:\n${esc(c.lego)}\n\nMotivation:\n${esc(c.motivation)}\n\nOpen BabyBrick to see this week’s update.</p>`;
+}
+
+/* ---------- calendar file (.ics) ---------- */
+function buildIcs() {
+  const link = STANDALONE ? location.href.split("#")[0] : CLAUDE_URL;
+  const e = (v) => v.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  const enc = new TextEncoder();
+  const fold = (line) => { if (enc.encode(line).length <= 75) return line; const out = []; let cur = "", b = 0; for (const ch of Array.from(line)) { const z = enc.encode(ch).length, lim = out.length ? 74 : 75; if (b + z > lim) { out.push(cur); cur = ch; b = z; } else { cur += ch; b += z; } } if (cur) out.push(cur); return out.map((x, i) => (i ? " " + x : x)).join("\r\n"); };
+  const c = (iso) => iso.replace(/-/g, "");
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//BabyBrick Journey//Weekly Pregnancy Reminders//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:BabyBrick Journey"];
+  for (const w of WEEKS) {
+    const start = addDays(S.lmp, w.week * 7), title = remTitle(w);
+    const desc = `This week your baby is ${legoSize(w)}.\n\n💛 ${w.motivation}\n\n🧱 Open BabyBrick Journey to see this week’s update:\n${link}`;
+    L.push("BEGIN:VEVENT", `UID:babybrick-week-${w.week}-20260928@babybrick.journey`, "SEQUENCE:2", `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${c(start)}`, `DTEND;VALUE=DATE:${c(addDays(start, 1))}`, `SUMMARY:${e(title)}`, `DESCRIPTION:${e(desc)}`, `URL;VALUE=URI:${link}`, "TRANSP:TRANSPARENT", "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${e(title)}`, "TRIGGER;RELATED=START:PT9H", "END:VALARM", "END:VEVENT");
+  }
+  L.push("END:VCALENDAR");
+  return L.map(fold).join("\r\n") + "\r\n";
+}
+document.addEventListener("click", (ev) => { if (ev.target.closest("[data-ics]")) saveFile("babybrick-calendar.ics", buildIcs(), "Calendar file ready. Tap it, then Add All."); });
+
+/* ---------- studio ---------- */
+function status(t) { const s = $("#studioStatus"); if (s) s.textContent = t; }
+let downloadsApi; const dl = () => (downloadsApi !== undefined ? Promise.resolve(downloadsApi) : (window.claude && window.claude.use ? window.claude.use("downloads").then((d) => (downloadsApi = d)).catch(() => (downloadsApi = null)) : Promise.resolve(null)));
+async function saveFile(filename, data, okMsg) {
+  const api = await dl();
+  if (!api) {
+    const blob = data instanceof Blob ? data : new Blob([data], { type: filename.endsWith(".json") ? "application/json" : filename.endsWith(".ics") ? "text/calendar" : "text/plain" });
+    try {
+      const file = new File([blob], filename, { type: blob.type });
+      if (/\.(png|pdf)$/.test(filename) && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); status(okMsg); return; }
+    } catch (err) { if (err && err.name === "AbortError") { status("Save cancelled."); return; } }
+    const url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    status(okMsg); return;
+  }
+  try { await api.save({ filename, data }); status(okMsg); }
+  catch (err) { const c = err && err.code; status(c === "declined" ? "Save cancelled." : c === "rate_limited" ? "One moment, a save is already open." : "The file couldn’t be saved here. Try again in a moment."); }
+}
+$("#nick").value = state.nickname;
+$("#nickSave").addEventListener("click", () => { const v = $("#nick").value.trim(); if (!v) return; state.nickname = v.slice(0, 40); saveSettings(); renderHero(); status("Nickname saved."); });
+$("#exportBtn").addEventListener("click", () => saveFile(`babybrick-backup-${today()}.json`, JSON.stringify({ app: "BabyBrick Journey", version: 1, exportedAt: new Date().toISOString(), settings: { lmp: state.lmp, babyNickname: state.nickname, reminderHour: 9 }, memories: state.memories, theme: state.theme, tools: { kicks: tool.kicks, contractions: tool.ctx, appts: tool.appts, bag: tool.bag, names: tool.names } }, null, 2), "Backup saved. Keep it somewhere safe, like iCloud Drive."));
+$("#importBtn").addEventListener("click", () => $("#importFile").click());
+$("#importFile").addEventListener("change", async (e) => {
+  const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return;
+  let data; try { data = JSON.parse(await f.text()); } catch (err) { status("That file isn’t a BabyBrick backup. Choose the .json file you exported."); return; }
+  if (!data || data.app !== "BabyBrick Journey") { status("That file wasn’t exported from BabyBrick Journey."); return; }
+  if (data.settings && validISO(data.settings.lmp)) { state.lmp = data.settings.lmp; if (data.settings.babyNickname) state.nickname = String(data.settings.babyNickname).slice(0, 40); }
+  const mems = Array.isArray(data.memories) ? data.memories.filter((m) => m && m.id && TYPES[m.type]) : [];
+  const err = store.set("memories", mems); if (err) { status(err); return; }
+  state.memories = mems; if (data.theme) { state.theme = Object.assign(state.theme, data.theme); applyTheme(); }
+  if (data.tools && typeof data.tools === "object") {
+    const T = data.tools;
+    if (Array.isArray(T.kicks)) { tool.kicks = T.kicks; store.set("kicks", T.kicks); }
+    if (Array.isArray(T.contractions)) { tool.ctx = T.contractions; store.set("contractions", T.contractions); }
+    if (Array.isArray(T.appts)) { tool.appts = T.appts; store.set("appts", T.appts); }
+    if (T.bag && typeof T.bag === "object") { tool.bag = Object.assign({ checked: {}, custom: [] }, T.bag); store.set("bag", tool.bag); }
+    if (Array.isArray(T.names)) { tool.names = T.names; store.set("names", T.names); }
+    renderTool();
+  }
+  saveSettings(); $("#nick").value = state.nickname; refresh(); selectWeek(S.week, false); renderMemories(); status("Backup restored.");
+});
+
+$("#cardBtn").addEventListener("click", async () => {
+  const b = $("#cardBtn"); b.disabled = true; b.textContent = "Creating card…";
+  try { const blob = await shareCard(); await saveFile(`babybrick-week-${S.week}.png`, blob, "Progress card saved."); }
+  catch (e) { status("The card couldn’t be created. Try again."); }
+  b.disabled = false; b.textContent = "Save progress card";
+});
+async function shareCard() {
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const w = W(S.week), Wd = 1080, H = 1350, c = document.createElement("canvas"); c.width = Wd; c.height = H; const x = c.getContext("2d");
+  const g = x.createLinearGradient(0, 0, Wd, H); g.addColorStop(0, "#FFF3F4"); g.addColorStop(.55, "#F2F6FF"); g.addColorStop(1, "#FFF8E1"); x.fillStyle = g; x.fillRect(0, 0, Wd, H);
+  const rr = (X, Y, w2, h2, r) => { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w2, Y, X + w2, Y + h2, r); x.arcTo(X + w2, Y + h2, X, Y + h2, r); x.arcTo(X, Y + h2, X, Y, r); x.arcTo(X, Y, X + w2, Y, r); x.closePath(); x.fill(); };
+  const u = 44;
+  for (let r = 0; r < 10; r++) for (let col = 0; col < 2; col++) {
+    const idx = r * 2 + col, Y = H - 260 - r * u * .8, X = Wd - 80 - u * 4 + col * u * 2 + (r % 2 ? u * .5 : 0) - u * .25, col0 = SEQ[(r + col) % 4];
+    x.globalAlpha = idx * 2 < S.week ? 1 : .14;
+    x.fillStyle = shade(col0, 14); for (let s = 0; s < 2; s++) rr(X + s * u + u * .22, Y, u * .56, u * .22 + 4, 6);
+    x.fillStyle = col0; rr(X, Y + u * .22, 2 * u, u * .8, 12); x.fillStyle = shade(col0, -18); rr(X, Y + u * .22 + u * .8 - 14, 2 * u, 14, 8);
+  }
+  x.globalAlpha = 1;
+  const sans = "'Bricolage Grotesque', system-ui, sans-serif", serif = "'Fraunces', Georgia, serif";
+  const wrapT = (t, max) => { const out = []; let line = ""; for (const word of t.split(" ")) { const test = line ? line + " " + word : word; if (x.measureText(test).width > max && line) { out.push(line); line = word; } else line = test; } if (line) out.push(line); return out; };
+  x.fillStyle = "#1B1A33"; x.font = `600 40px ${sans}`; x.fillText("BabyBrick Journey", 80, 120);
+  x.font = `800 220px ${sans}`; x.fillText(String(w.week), 72, 400);
+  x.font = `600 52px ${sans}`; x.fillStyle = "#5E6280"; x.fillText(w.week === 1 ? "week" : "weeks", 80, 470);
+  x.fillStyle = "#1B1A33"; x.font = `700 64px ${sans}`; const L = wrapT(`${state.nickname} is ${legoSize(w)}`, 560); L.forEach((l, i) => x.fillText(l, 80, 600 + i * 76));
+  const a = 600 + L.length * 76 + 30; x.font = `500 40px ${sans}`; x.fillStyle = "#5E6280"; x.fillText(`${fmtLen(w.lengthCm)}   ${fmtW(w.weightG)}`, 80, a);
+  x.font = `italic 400 44px ${serif}`; x.fillStyle = "#1B1A33"; wrapT(`“${w.quote}”`, 560).slice(0, 4).forEach((l, i) => x.fillText(l, 80, a + 170 + i * 58));
+  const by = H - 150; x.fillStyle = "rgba(27,26,51,.08)"; rr(80, by, Wd - 160, 26, 13);
+  const gr = x.createLinearGradient(80, 0, Wd - 80, 0); SEQ.forEach((cc, i) => gr.addColorStop(i / 3, cc)); x.fillStyle = gr; rr(80, by, Math.max(26, (Wd - 160) * S.progress / 100), 26, 13);
+  x.font = `600 34px ${sans}`; x.fillStyle = "#1B1A33"; x.fillText(`${Math.round(S.progress)}% built`, 80, by + 80); const dd = `Due ${fmt(S.due)}`; x.fillText(dd, Wd - 80 - x.measureText(dd).width, by + 80);
+  return new Promise((res, rej) => c.toBlob((b) => b ? res(b) : rej(new Error("no blob")), "image/png"));
+}
+
+/* PDFs */
+const pdfSafe = (t) => String(t).replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/[^\x00-\xFF]/g, "");
+function hexRGB(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+$("#tlBtn").addEventListener("click", async () => {
+  if (!window.jspdf) { status("The PDF tool didn’t load. Check your connection and reload the page."); return; }
+  const doc = new window.jspdf.jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  doc.setFont("helvetica", "bold"); doc.setFontSize(20); doc.setTextColor(27, 26, 51); doc.text(pdfSafe(`${state.nickname}'s forty weeks`), 12, 16);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(94, 98, 128); doc.text(pdfSafe(`Due ${fmt(S.due)}. Currently week ${S.week}.`), 12, 22);
+  const cw = 39, ch = 30, gx = 1.7; let y = 28;
+  TRIS.forEach((t) => {
+    const [r, g, b] = hexRGB(TRI[t.id]); doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(r, g, b); doc.text(t.label, 12, y + 4); y += 6;
+    WEEKS.slice(t.s - 1, t.e).forEach((w, i) => {
+      const col = i % 7, row = Math.floor(i / 7), X = 12 + col * (cw + gx), Y = y + row * (ch + 2), cur = w.week === S.week;
+      doc.setDrawColor(cur ? r : 215, cur ? g : 218, cur ? b : 228); doc.setLineWidth(cur ? .7 : .25); if (cur) doc.setFillColor(Math.round(255 - (255 - r) * .1), Math.round(255 - (255 - g) * .1), Math.round(255 - (255 - b) * .1)); else doc.setFillColor(255, 255, 255);
+      doc.roundedRect(X, Y, cw, ch, 2, 2, "FD");
+      doc.setTextColor(27, 26, 51); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.text(`Week ${w.week}`, X + 2.5, Y + 5);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(6.5); doc.setTextColor(94, 98, 128); doc.text(fmt(addDays(S.lmp, w.week * 7), "short"), X + cw - 2.5, Y + 5, { align: "right" });
+      doc.setTextColor(27, 26, 51); doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.text(doc.splitTextToSize(pdfSafe(w.lego), cw - 5).slice(0, 2), X + 2.5, Y + 10.5);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(6.5); doc.setTextColor(94, 98, 128); doc.text(fmtLen(w.lengthCm), X + 2.5, Y + 18);
+      doc.text(fmtW(w.weightG), X + 2.5, Y + 21.5);
+      if (w.keyMilestone) { doc.setFont("helvetica", "bold"); doc.setTextColor(r, g, b); doc.text(doc.splitTextToSize(pdfSafe(w.keyMilestone), cw - 5).slice(0, 1), X + 2.5, Y + 27); }
+    });
+    y += Math.ceil((t.e - t.s + 1) / 7) * (ch + 2) + 2;
+  });
+  await saveFile("babybrick-timeline.pdf", doc.output("blob"), "Timeline PDF saved. Open it and tap Print.");
+});
+$("#bookBtn").addEventListener("click", async () => {
+  if (!window.jspdf) { status("The PDF tool didn’t load. Check your connection and reload the page."); return; }
+  const b = $("#bookBtn"); b.disabled = true; b.textContent = "Building book…";
+  try {
+    const doc = new window.jspdf.jsPDF({ unit: "mm", format: "a4" }), PW = 210, M = 18;
+    const tower = (cx, by) => { for (let r = 0; r < 5; r++) for (let c = 0; c < 5 - r; c++) { const [R, G, B] = hexRGB(SEQ[(r + c) % 4]); doc.setFillColor(R, G, B); const w = 16, X = cx - (5 - r) * (w + 1) / 2 + c * (w + 1) + (r % 2 ? 2 : -2), Y = by - r * 8.5; doc.roundedRect(X + 3, Y - 2, 3.5, 2.5, .6, .6, "F"); doc.roundedRect(X + 9.5, Y - 2, 3.5, 2.5, .6, .6, "F"); doc.roundedRect(X, Y, w, 7, 1.2, 1.2, "F"); } };
+    tower(PW / 2, 100);
+    doc.setTextColor(27, 26, 51); doc.setFont("helvetica", "bold"); doc.setFontSize(32); doc.text("Our Little Brick", PW / 2, 130, { align: "center" });
+    doc.setFont("times", "italic"); doc.setFontSize(14); doc.setTextColor(94, 98, 128); doc.text("The story of how we built our family, one week at a time.", PW / 2, 140, { align: "center" });
+    doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(27, 26, 51);
+    doc.text(pdfSafe(`${state.nickname}   |   Due ${fmt(S.due)}   |   ${state.memories.length} memories`), PW / 2, 158, { align: "center" });
+    const mems = [...state.memories].sort((a, b2) => a.week - b2.week || (a.date < b2.date ? -1 : 1));
+    if (!mems.length) { doc.addPage(); doc.setFontSize(13); doc.setTextColor(94, 98, 128); doc.text("Add photos, scans and notes in Memories and they'll appear here.", PW / 2, 60, { align: "center" }); }
+    let y = 999, lastWeek = 0;
+    const need = (h) => { if (y + h > 280) { doc.addPage(); y = M; } };
+    for (const m of mems) {
+      if (m.week !== lastWeek) {
+        lastWeek = m.week; const w = W(m.week); need(30);
+        doc.setFont("helvetica", "bold"); doc.setFontSize(20); doc.setTextColor(27, 26, 51); doc.text(`Week ${m.week}`, M, y + 8);
+        doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(94, 98, 128); doc.text(pdfSafe(w.lego), M + 42, y + 8);
+        doc.setFont("times", "italic"); doc.setFontSize(12); const ql = doc.splitTextToSize(pdfSafe(`"${w.quote}"`), PW - 2 * M); doc.text(ql, M, y + 16); y += 18 + ql.length * 5;
+      }
+      if (m.image) {
+        const im = await new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = m.image; });
+        if (im) { const maxW = PW - 2 * M, maxH = 110, s = Math.min(maxW / im.naturalWidth, maxH / im.naturalHeight), w = im.naturalWidth * s, h = im.naturalHeight * s; need(h + 6); doc.addImage(m.image, "JPEG", M, y, w, h); y += h + 5; }
+      }
+      need(16);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(94, 98, 128); doc.text(pdfSafe(`${TYPES[m.type].label}, ${fmt(m.date)}`), M, y + 4);
+      doc.setFont("helvetica", "bold"); doc.setFontSize(13); doc.setTextColor(27, 26, 51); doc.text(doc.splitTextToSize(pdfSafe(m.title), PW - 2 * M), M, y + 10); y += 14;
+      if (m.text) { doc.setFont("helvetica", "normal"); doc.setFontSize(10.5); const tl2 = doc.splitTextToSize(pdfSafe(m.text), PW - 2 * M); for (const line of tl2) { need(6); doc.text(line, M, y + 1); y += 5; } }
+      y += 8;
+    }
+    await saveFile("babybrick-memory-book.pdf", doc.output("blob"), "Memory book saved.");
+  } catch (e) { status("The memory book couldn’t be created. Try again."); }
+  b.disabled = false; b.textContent = "Save memory book";
+});
+
+/* ---------- capability helpers ---------- */
+let sampleApi;
+const getSample = () => (sampleApi !== undefined ? Promise.resolve(sampleApi) : (window.claude && window.claude.use ? window.claude.use("sample").then((x) => (sampleApi = x)).catch(() => (sampleApi = null)) : Promise.resolve(sampleApi = null)));
+const aiError = (e) => {
+  const c = e && e.code;
+  if (c === "not_granted" || c === "sampling_disabled" || c === "not_declared") return "Little Brick needs your permission to answer. Allow it when asked, or reload the page to try again.";
+  if (c === "rate_limited") return "Lots of questions at once. Wait a moment, then send again.";
+  if (c === "refused") return "Little Brick can’t help with that one. Try asking another way, or ask your doctor.";
+  if (c === "session_expired") return "Your session ended. Reload the page and sign in again.";
+  return "Something went wrong. Try sending again in a moment.";
+};
+const clean = (t) => String(t || "").replace(/\*\*(.+?)\*\*/g, "$1").replace(/^#+\s*/gm, "").trim();
+
+/* ---------- Ask Little Brick ---------- */
+const chat = { turns: (store.get("chat", []) || []).slice(-20), busy: false, ctl: null };
+const SUGS = [
+  ["What’s happening this week?", "What’s happening with the baby and with me this week?"],
+  ["How can I support my wife?", "I’m the husband. What are 5 specific ways I can support my wife this week?"],
+  ["Snack ideas", "Give me healthy, easy snack ideas that suit this week of pregnancy."],
+  ["اكتب رسالة لطفلنا", "اكتب رسالة قصيرة ودافئة من الأب والأم لطفلنا في هذا الأسبوع من الحمل."],
+  ["Questions for the doctor", "What questions should we ask at our next prenatal appointment at this stage?"],
+  ["Write a letter to our baby", "Write a short, warm letter from both parents to our baby at this week of pregnancy."]
+];
+function rules() {
+  const w = W(S.week);
+  return `You are "Little Brick", the warm companion inside BabyBrick Journey, a pregnancy tracker used by a couple.
+Context right now: ${S.week} weeks and ${S.dow} days pregnant (${ord(S.tri)} trimester). Due date ${fmt(S.due)}. Baby nickname: ${state.nickname}. This week the baby is ${legoSize(w)} (about ${fmtLen(w.lengthCm)}, ${fmtW(w.weightG)}). Development this week: ${w.milestone}
+Rules:
+- Reply in the language of the user's latest message. If Arabic, use warm, clear Arabic that reads naturally for a Saudi family.
+- Be concise: under 170 words, unless asked to write a letter, plan or list.
+- Educational support only. Never diagnose and never give medication names or doses. For symptoms: say briefly what is commonly expected, list warning signs, and advise checking with their doctor.
+- If the message mentions heavy bleeding, severe abdominal pain, fever, severe headache or vision changes, fluid leaking, reduced baby movement, or thoughts of self-harm, start by telling them to contact their doctor or emergency services now.
+- Plain text only: short paragraphs, and "- " bullets when listing. No markdown headings, bold or tables.`;
+}
+function bubble(t, i) {
+  const me = t.role === "user";
+  return `<div class="bub ${me ? "me" : "ai"}" dir="auto">${esc(t.content)}${!me && t.content ? `<div class="acts"><button data-save="${i}">${icon("book", 13)} Save to memories</button><button data-copy="${i}">${icon("copy", 13)} Copy</button></div>` : ""}</div>`;
+}
+function renderChat() {
+  const el = $("#chat");
+  if (STANDALONE) {
+    el.innerHTML = `<div class="askhello"><div>${cluster(3, 30)}</div><p style="margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em">Little Brick lives in Claude</p><p class="muted" style="margin:0;max-width:24rem">The AI companion and name ideas run through your Claude account. Open the Claude version to chat; everything else works right here.</p><p dir="rtl" class="muted" style="margin:0">المساعد الذكي يعمل من نسخة Claude</p><a class="btn" href="${CLAUDE_URL}" target="_blank" rel="noopener">Open Little Brick in Claude</a></div>`;
+    $("#sugs").innerHTML = ""; $(".composer").hidden = true; $("#askClear").hidden = true; return;
+  }
+  if (!chat.turns.length) {
+    el.innerHTML = `<div class="askhello"><div>${cluster(3, 30)}</div><p style="margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em">Hi, I’m Little Brick</p><p class="muted" style="margin:0;max-width:24rem">I know you’re ${S.week} weeks and ${S.dow} ${S.dow === 1 ? "day" : "days"} along. Ask me about this week, your body, how to prepare, or ask me to write something special.</p><p dir="rtl" class="muted" style="margin:0">اسألني بالعربي أو الإنجليزي</p></div>`;
+  } else el.innerHTML = chat.turns.map(bubble).join("") + (chat.busy && chat.turns[chat.turns.length - 1].role === "user" ? `<div class="bub ai thinking" id="live"><span class="dots"><i></i><i></i><i></i></span></div>` : "");
+  $("#sugs").innerHTML = SUGS.map(([l], i) => `<button data-sug="${i}" dir="auto">${l}</button>`).join("");
+  $("#askClear").hidden = !chat.turns.length || chat.busy;
+  $("#askSend").innerHTML = chat.busy ? icon("x") : icon("send");
+  $("#askSend").setAttribute("aria-label", chat.busy ? "Stop" : "Send");
+  el.scrollTop = el.scrollHeight;
+}
+async function ask(text) {
+  text = text.trim(); if (!text || chat.busy) return;
+  const sample = await getSample();
+  if (!sample) { renderChat(); return; }
+  chat.turns.push({ role: "user", content: text }); chat.busy = true; renderChat();
+  $("#askInput").value = ""; autoGrow();
+  const recent = chat.turns.slice(-12);
+  const input = recent.map((t, i) => i === 0 && t.role === "user" ? { role: "user", content: `${rules()}\n\nMessage: ${t.content}` } : t);
+  if (input[0].role !== "user") input.shift();
+  if (input[0] && input[0].role === "user" && !input[0].content.startsWith("You are")) input[0] = { role: "user", content: `${rules()}\n\nMessage: ${input[0].content}` };
+  chat.ctl = new AbortController();
+  let live = null;
+  try {
+    const { text: answer } = await sample(input, { cache: false, signal: chat.ctl.signal, onText: ({ text: t }) => {
+      if (!live) { live = { role: "assistant", content: "" }; chat.turns.push(live); }
+      live.content = clean(t); renderChat();
+    } });
+    if (!live) { live = { role: "assistant", content: "" }; chat.turns.push(live); }
+    live.content = clean(answer);
+  } catch (e) {
+    const kept = clean(e && e.text);
+    if (live) live.content = kept || live.content;
+    if (!live && kept) chat.turns.push({ role: "assistant", content: kept });
+    if (!(e && e.code === "cancelled")) chat.turns.push({ role: "assistant", content: aiError(e) });
+    if (live && !live.content) chat.turns.splice(chat.turns.indexOf(live), 1);
+  }
+  chat.busy = false; chat.ctl = null;
+  chat.turns = chat.turns.filter((t) => t.content).slice(-20);
+  store.set("chat", chat.turns); renderChat();
+}
+function autoGrow() { const t = $("#askInput"); t.style.height = "auto"; t.style.height = Math.min(140, t.scrollHeight) + "px"; }
+$("#askInput").addEventListener("input", autoGrow);
+$("#askInput").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing && matchMedia("(hover:hover)").matches) { e.preventDefault(); ask($("#askInput").value); } });
+$("#askSend").addEventListener("click", () => { if (chat.busy) { chat.ctl && chat.ctl.abort(); return; } ask($("#askInput").value); });
+$("#sugs").addEventListener("click", (e) => { const b = e.target.closest("[data-sug]"); if (b) ask(SUGS[+b.dataset.sug][1]); });
+$("#askClear").addEventListener("click", () => { chat.turns = []; store.set("chat", []); renderChat(); });
+$("#chat").addEventListener("click", async (e) => {
+  const sv = e.target.closest("[data-save]"), cp = e.target.closest("[data-copy]");
+  if (sv) {
+    const t = chat.turns[+sv.dataset.save]; if (!t) return;
+    const m = { id: Date.now().toString(36) + Math.random().toString(36).slice(2), type: "journal", title: `From Little Brick, week ${S.week}`, text: t.content, date: today(), week: S.week, createdAt: Date.now() };
+    const next = [m, ...state.memories], err = store.set("memories", next);
+    if (err) { sv.textContent = "Storage full"; return; }
+    state.memories = next; renderMemories(); sv.innerHTML = `${icon("check", 13)} Saved`; sv.disabled = true;
+  }
+  if (cp) { const t = chat.turns[+cp.dataset.copy]; try { await navigator.clipboard.writeText(t.content); cp.innerHTML = `${icon("check", 13)} Copied`; } catch (err) { cp.textContent = "Press and hold the text to copy"; } }
+});
+
+/* ---------- Toolkit ---------- */
+const TOOLS = [["kicks", "Kick counter", "foot"], ["contractions", "Contractions", "timer"], ["appts", "Appointments", "cal"], ["bag", "Hospital bag", "bag"], ["names", "Baby names", "tag"]];
+const tool = {
+  tab: "kicks",
+  kicks: store.get("kicks", []) || [], kickLive: store.get("kickLive", null),
+  ctx: store.get("contractions", []) || [],
+  appts: store.get("appts", []) || [],
+  bag: Object.assign({ checked: {}, custom: [] }, store.get("bag", {})),
+  names: store.get("names", []) || [], nameFilter: "all", sugg: [], suggBusy: false, suggErr: ""
+};
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const mmss = (ms) => { const t = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(t / 60)}:${pad(t % 60)}`; };
+const hhmm = (ts) => new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit" }).format(new Date(ts));
+const dshort = (ts) => fmt(toISO(new Date(ts)), "short");
+function persistTool(key, val) { const err = store.set(key, val); if (err) status(err); }
+
+function renderToolTabs() {
+  $("#ttabs").innerHTML = TOOLS.map(([id, l, ic]) => `<button role="tab" aria-selected="${tool.tab === id}" class="${tool.tab === id ? "on" : ""}" data-tool="${id}">${icon(ic, 17)}${l}</button>`).join("");
+}
+$("#ttabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tool]"); if (b) { tool.tab = b.dataset.tool; renderToolTabs(); renderTool(); } });
+
+function renderTool() {
+  const body = $("#toolBody"); let h = "";
+  if (tool.tab === "kicks") {
+    const live = tool.kickLive;
+    h = `<div class="two"><div class="card pad" style="border-radius:28px;text-align:center">
+      <p class="lbl">${live ? "Session running" : "Tap start, then tap once for every movement"}</p>
+      <button class="kick" id="kickTap" ${live ? "" : "disabled"} aria-label="Record a kick"><div><b class="tab" id="kickCount">${live ? live.count : 0}</b><span>${live ? "Tap for each kick" : "Not started"}</span></div></button>
+      <p class="tab" style="margin:22px 0 0;font-size:28px;font-weight:800;letter-spacing:-.02em" id="kickTime">${live ? mmss(Date.now() - live.start) : "0:00"}</p>
+      <div style="display:flex;gap:8px;margin-top:14px">${live ? `<button class="btn soft" style="flex:1" data-kick="undo">Undo</button><button class="btn" style="flex:1;--b:var(--brick-green)" data-kick="finish">Finish session</button>` : `<button class="btn" style="flex:1" data-kick="start">Start a session</button>`}</div>
+      <p class="lbl" style="font-weight:500;font-size:13px;margin-top:14px">${S.week < 28 ? "Most care teams suggest daily kick counts from around week 28. Until then, enjoy getting familiar with it." : "Many care teams look for 10 movements within 2 hours. Follow your doctor’s guidance, and call them if movement feels less than usual."}</p>
+    </div><div class="card pad" style="border-radius:28px"><p style="margin:0 0 6px;font-weight:700">Recent sessions</p>
+      ${tool.kicks.length ? `<div class="rows">${tool.kicks.slice(0, 8).map((k) => `<div class="rowi"><span>${dshort(k.start)}, ${hhmm(k.start)}</span><span class="tab"><b>${k.count}</b> kicks in ${mmss(k.end - k.start)}</span></div>`).join("")}</div>` : `<p class="muted">Your sessions will appear here.</p>`}
+    </div></div>`;
+  }
+  if (tool.tab === "contractions") {
+    const running = tool.ctx.find((c) => !c.end);
+    const done = tool.ctx.filter((c) => c.end);
+    const hour = done.filter((c) => Date.now() - c.start < 3600e3);
+    let summary = "Time at least three contractions to see a pattern.";
+    if (hour.length >= 3) {
+      const avgD = hour.reduce((a, c) => a + (c.end - c.start), 0) / hour.length;
+      const gaps = hour.slice(0, -1).map((c, i) => c.start - hour[i + 1].start);
+      const avgG = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+      summary = `Last hour: about every <b class="tab">${mmss(avgG)}</b>, lasting <b class="tab">${mmss(avgD)}</b> each.`;
+    }
+    h = `<div class="two"><div class="card pad" style="border-radius:28px;text-align:center">
+      <p class="lbl">${running ? "Contraction in progress" : "Tap when a contraction starts"}</p>
+      <button class="kick ct${running ? " run" : ""}" data-ctx="toggle" aria-label="${running ? "Contraction ended" : "Contraction started"}"><div><b class="tab" id="ctxTime" style="font-size:52px">${running ? mmss(Date.now() - running.start) : "Start"}</b><span>${running ? "Tap when it ends" : "Tap to start timing"}</span></div></button>
+      <p style="margin:24px 0 0;font-size:16px" id="ctxSum">${summary}</p>
+      <p class="lbl" style="font-weight:500;font-size:13px;margin-top:12px">Follow your care team’s advice on when to go in. Many use the 5-1-1 guide: every 5 minutes, lasting 1 minute, for 1 hour. Go in straight away if your waters break, you bleed, or the baby moves less.</p>
+    </div><div class="card pad" style="border-radius:28px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><p style="margin:0;font-weight:700">Timed contractions</p>${tool.ctx.length ? `<button class="btn soft sm" data-ctx="clear">Clear</button>` : ""}</div>
+      ${done.length ? `<div class="rows"><div class="rowi lbl" style="font-size:12px"><span>Started</span><span>Length</span><span>Apart</span></div>${done.slice(0, 10).map((c, i) => { const prev = done[i + 1]; return `<div class="rowi tab"><span>${hhmm(c.start)}</span><span>${mmss(c.end - c.start)}</span><span>${prev ? mmss(c.start - prev.start) : "–"}</span></div>`; }).join("")}</div>` : `<p class="muted">Each contraction you time will appear here.</p>`}
+    </div></div>`;
+  }
+  if (tool.tab === "appts") {
+    const t = today(), up = tool.appts.filter((a) => !a.done).sort((a, b) => (a.date + (a.time || "")) < (b.date + (b.time || "")) ? -1 : 1), past = tool.appts.filter((a) => a.done);
+    const row = (a) => `<div class="rowi"><button class="check${a.done ? " on" : ""}" style="border:0;padding:0;flex:1" data-appt="${a.id}"><span class="box">${a.done ? icon("check", 14) : ""}</span><span><span class="t" style="display:block;font-weight:700">${esc(a.title)}</span><span class="muted" style="font-size:13px">${fmt(a.date, "weekday")}${a.time ? `, ${a.time}` : ""}${a.date < t && !a.done ? " · missed?" : ""}${a.note ? `<br>${esc(a.note)}` : ""}</span></span></button><button class="btn soft sm" style="min-height:34px;padding:4px 10px" data-delappt="${a.id}" aria-label="Delete ${esc(a.title)}">${icon("trash", 15)}</button></div>`;
+    h = `<div class="two"><div class="card pad" style="border-radius:28px"><p style="margin:0 0 6px;font-weight:700">Upcoming</p>${up.length ? `<div class="rows">${up.map(row).join("")}</div>` : `<p class="muted">No appointments yet. Add your next checkup or scan.</p>`}
+      ${past.length ? `<p style="margin:20px 0 6px;font-weight:700">Done</p><div class="rows">${past.map(row).join("")}</div>` : ""}</div>
+      <div class="card pad" style="border-radius:28px"><p style="margin:0;font-weight:700">Add an appointment</p>
+        <label class="fl"><span>What</span><input class="field" id="apTitle" maxlength="60" placeholder="Anatomy scan" dir="auto"></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><label class="fl"><span>Date</span><input type="date" class="field" id="apDate" value="${t}"></label><label class="fl"><span>Time</span><input type="time" class="field" id="apTime"></label></div>
+        <label class="fl"><span>Notes</span><input class="field" id="apNote" maxlength="120" placeholder="Bring the glucose test results" dir="auto"></label>
+        <button class="btn" style="width:100%;margin-top:16px" data-addappt>Add appointment</button></div></div>`;
+  }
+  if (tool.tab === "bag") {
+    const groups = [["For mom", ["Your ID and family card", "Insurance card", "Hospital file and test results", "Comfortable robe and nightgowns", "Nursing bras and pads", "Maternity pads", "Slippers and warm socks", "Toiletries and lip balm", "Hair ties", "Going-home outfit"]], ["For baby", ["2–3 bodysuits", "Going-home outfit", "Hat and socks", "Swaddle blanket", "Newborn diapers and wipes", "Car seat installed"]], ["For dad", ["Phone charger and power bank", "Change of clothes", "Snacks and water", "Prayer mat", "Camera or extra phone storage"]]];
+    const all = groups.flatMap(([g, items]) => items.map((it) => ({ id: g + ":" + it, label: it, g }))).concat(tool.bag.custom.map((c) => ({ id: c.id, label: c.label, g: "Added by you", custom: true })));
+    const n = all.filter((x) => tool.bag.checked[x.id]).length;
+    const byG = {}; all.forEach((x) => (byG[x.g] = byG[x.g] || []).push(x));
+    h = `<div class="card pad" style="border-radius:28px"><div style="display:flex;justify-content:space-between;align-items:baseline"><p style="margin:0;font-weight:700">Packed</p><p class="tab" style="margin:0;font-size:24px;font-weight:800">${n}/${all.length}</p></div>
+      <div class="bar" style="margin-top:10px"><i style="width:${all.length ? n / all.length * 100 : 0}%;background:var(--brick-green)"></i></div>
+      <p class="lbl" style="font-weight:500;font-size:13px;margin-top:10px">${S.week >= 34 ? "Good timing: most families have the bag ready by week 36." : `Most families pack by week 36. That’s ${Math.max(0, 36 - S.week)} weeks from now.`}</p></div>
+      <div class="tools" style="margin-top:14px">${Object.entries(byG).map(([g, items]) => `<div class="card pad" style="border-radius:24px"><p style="margin:0 0 4px;font-weight:700">${g}</p>${items.map((x) => `<button class="check${tool.bag.checked[x.id] ? " on" : ""}" data-bag="${esc(x.id)}"><span class="box">${tool.bag.checked[x.id] ? icon("check", 14) : ""}</span><span class="t" style="flex:1">${esc(x.label)}</span>${x.custom ? `<span data-delbag="${x.id}" class="muted" aria-label="Remove">${icon("x", 15)}</span>` : ""}</button>`).join("")}</div>`).join("")}
+      <div class="card pad" style="border-radius:24px"><p style="margin:0;font-weight:700">Add your own</p><div style="display:flex;gap:8px;margin-top:10px"><input class="field" id="bagNew" maxlength="50" placeholder="Favorite pillow" dir="auto"><button class="btn sq" data-addbag aria-label="Add item">${icon("plus")}</button></div></div></div>`;
+  }
+  if (tool.tab === "names") {
+    const list = tool.names.filter((n) => tool.nameFilter === "all" || (tool.nameFilter === "fav" ? n.fav : n.kind === tool.nameFilter));
+    h = `<div class="two"><div class="card pad" style="border-radius:28px">
+      <p style="margin:0;font-weight:700">Your shortlist</p>
+      <div style="display:flex;gap:8px;margin-top:12px"><input class="field" id="nmNew" maxlength="40" placeholder="Add a name" dir="auto"><select class="field" id="nmKind" style="width:auto"><option value="girl">Girl</option><option value="boy">Boy</option><option value="either">Either</option></select><button class="btn sq" data-addname aria-label="Add name">${icon("plus")}</button></div>
+      <div class="filters" style="margin-top:14px">${[["all", "All"], ["fav", "Favorites"], ["girl", "Girl"], ["boy", "Boy"]].map(([id, l]) => `<button class="${tool.nameFilter === id ? "on" : ""}" data-nf="${id}">${l}</button>`).join("")}</div>
+      <div style="display:grid;gap:8px;margin-top:12px">${list.length ? list.map((n) => `<div class="namechip"><div style="flex:1"><div class="nm" dir="auto">${esc(n.name)}</div>${n.meaning ? `<div class="muted" style="font-size:13px" dir="auto">${esc(n.meaning)}</div>` : ""}</div><span class="chip" style="background:var(--surface);color:var(--muted)">${n.kind === "girl" ? "Girl" : n.kind === "boy" ? "Boy" : "Either"}</span><button class="heart${n.fav ? " on" : ""}" data-fav="${n.id}" aria-label="${n.fav ? "Remove from" : "Add to"} favorites">${icon("heart", 18)}</button><button class="heart" data-delname="${n.id}" aria-label="Remove ${esc(n.name)}">${icon("x", 16)}</button></div>`).join("") : `<p class="muted">${tool.names.length ? "No names in this view." : "Add names you both like, then heart your favorites."}</p>`}</div>
+    </div><div class="card pad" style="border-radius:28px">
+      <p style="margin:0;font-weight:700">Name ideas from Little Brick</p>
+      <p class="muted" style="margin:6px 0 0;font-size:14px">Beautiful names with their meanings, in Arabic and English.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px"><select class="field" id="sgKind"><option value="girl">Girl</option><option value="boy">Boy</option></select><select class="field" id="sgStyle"><option>Classic Arabic</option><option>Modern Arabic</option><option>Easy in Arabic and English</option><option>From the Quran</option><option>Rare and unique</option></select></div>
+      <button class="btn" style="width:100%;margin-top:12px" data-suggest ${tool.suggBusy ? "disabled" : ""}>${tool.suggBusy ? "Finding names…" : "Suggest 8 names"}</button>
+      ${tool.suggErr ? `<p class="err" style="font-size:14px;font-weight:600">${tool.suggErr}</p>` : ""}
+      <div style="display:grid;gap:8px;margin-top:12px">${tool.sugg.map((n, i) => `<div class="sugname"><div><div style="font-weight:700;font-size:17px">${esc(n.name)} <span dir="rtl" style="font-weight:600">${esc(n.arabic || "")}</span></div><div class="muted" style="font-size:13px">${esc(n.meaning || "")}</div></div><button class="btn soft sm" data-addsug="${i}" ${tool.names.some((x) => x.name === n.name) ? "disabled" : ""}>${tool.names.some((x) => x.name === n.name) ? "Added" : "Add"}</button></div>`).join("")}</div>
+    </div></div>`;
+  }
+  body.innerHTML = `<div class="toolpane">${h}</div>`;
+  if (tool.tab === "names") { const k = $("#sgKind"); if (k && tool.sgKind) k.value = tool.sgKind; const st = $("#sgStyle"); if (st && tool.sgStyle) st.value = tool.sgStyle; }
+}
+
+$("#toolBody").addEventListener("click", async (e) => {
+  const q = (s) => e.target.closest(s);
+  let b;
+  // kicks
+  if ((b = q("[data-kick]"))) {
+    const a = b.dataset.kick;
+    if (a === "start") tool.kickLive = { start: Date.now(), count: 0 };
+    if (a === "undo" && tool.kickLive) tool.kickLive.count = Math.max(0, tool.kickLive.count - 1);
+    if (a === "finish" && tool.kickLive) { if (tool.kickLive.count > 0) { tool.kicks.unshift({ start: tool.kickLive.start, end: Date.now(), count: tool.kickLive.count }); tool.kicks = tool.kicks.slice(0, 60); persistTool("kicks", tool.kicks); if (tool.kickLive.count >= 10) celebrate(.8); } tool.kickLive = null; }
+    persistTool("kickLive", tool.kickLive); renderTool(); return;
+  }
+  if ((b = q("#kickTap")) && tool.kickLive) {
+    tool.kickLive.count++; persistTool("kickLive", tool.kickLive);
+    $("#kickCount").textContent = tool.kickLive.count; b.classList.remove("pulse"); void b.offsetWidth; b.classList.add("pulse");
+    if (navigator.vibrate) navigator.vibrate(12);
+    if (tool.kickLive.count === 10) celebrate(.8);
+    return;
+  }
+  // contractions
+  if ((b = q("[data-ctx]"))) {
+    if (b.dataset.ctx === "clear") { if (b.dataset.sure) { tool.ctx = []; persistTool("contractions", []); renderTool(); } else { b.dataset.sure = 1; b.textContent = "Tap again to clear"; } return; }
+    const running = tool.ctx.find((c) => !c.end);
+    if (running) running.end = Date.now(); else tool.ctx.unshift({ start: Date.now(), end: null });
+    tool.ctx = tool.ctx.slice(0, 80); persistTool("contractions", tool.ctx); if (navigator.vibrate) navigator.vibrate(15); renderTool(); return;
+  }
+  // appointments
+  if (q("[data-addappt]")) {
+    const title = $("#apTitle").value.trim(), date = $("#apDate").value;
+    if (!title || !validISO(date)) { $("#apTitle").focus(); return; }
+    tool.appts.push({ id: uid(), title, date, time: $("#apTime").value, note: $("#apNote").value.trim(), done: false });
+    persistTool("appts", tool.appts); renderTool(); return;
+  }
+  if ((b = q("[data-appt]"))) { const a = tool.appts.find((x) => x.id === b.dataset.appt); if (a) { a.done = !a.done; persistTool("appts", tool.appts); renderTool(); } return; }
+  if ((b = q("[data-delappt]"))) { tool.appts = tool.appts.filter((x) => x.id !== b.dataset.delappt); persistTool("appts", tool.appts); renderTool(); return; }
+  // bag
+  if ((b = q("[data-delbag]"))) { e.stopPropagation(); const id = b.dataset.delbag; tool.bag.custom = tool.bag.custom.filter((c) => c.id !== id); delete tool.bag.checked[id]; persistTool("bag", tool.bag); renderTool(); return; }
+  if ((b = q("[data-bag]"))) { const id = b.dataset.bag; if (tool.bag.checked[id]) delete tool.bag.checked[id]; else tool.bag.checked[id] = 1; persistTool("bag", tool.bag); renderTool(); return; }
+  if (q("[data-addbag]")) { const v = $("#bagNew").value.trim(); if (!v) return; tool.bag.custom.push({ id: "c:" + uid(), label: v }); persistTool("bag", tool.bag); renderTool(); return; }
+  // names
+  if (q("[data-addname]")) { const v = $("#nmNew").value.trim(); if (!v) return; tool.names.unshift({ id: uid(), name: v, kind: $("#nmKind").value, fav: false }); persistTool("names", tool.names); renderTool(); return; }
+  if ((b = q("[data-nf]"))) { tool.nameFilter = b.dataset.nf; renderTool(); return; }
+  if ((b = q("[data-fav]"))) { const n = tool.names.find((x) => x.id === b.dataset.fav); if (n) { n.fav = !n.fav; persistTool("names", tool.names); renderTool(); } return; }
+  if ((b = q("[data-delname]"))) { tool.names = tool.names.filter((x) => x.id !== b.dataset.delname); persistTool("names", tool.names); renderTool(); return; }
+  if ((b = q("[data-addsug]"))) { const n = tool.sugg[+b.dataset.addsug]; if (n) { tool.names.unshift({ id: uid(), name: n.name, kind: tool.sgKind || "girl", fav: false, meaning: [n.arabic, n.meaning].filter(Boolean).join(" · ") }); persistTool("names", tool.names); renderTool(); } return; }
+  if (q("[data-suggest]")) {
+    tool.sgKind = $("#sgKind").value; tool.sgStyle = $("#sgStyle").value;
+    const sample = await getSample();
+    if (!sample) { tool.suggErr = "Name ideas run in the Claude version of BabyBrick. Add your own names here anytime."; renderTool(); return; }
+    tool.suggBusy = true; tool.suggErr = ""; renderTool();
+    const avoid = tool.names.map((n) => n.name).join(", ");
+    try {
+      const data = await sample.json(`Suggest 8 ${tool.sgKind} baby names in the style "${tool.sgStyle}" for a Saudi Muslim family. Each must be a real, respectful name. ${avoid ? `Do not repeat these names: ${avoid}.` : ""}
+Return ONLY a JSON array of 8 objects: [{"name": "English spelling", "arabic": "الاسم بالعربية", "meaning": "short English meaning, under 8 words"}]`, { modelTier: "quick" });
+      tool.sugg = (Array.isArray(data) ? data : []).filter((x) => x && x.name).slice(0, 8);
+      if (!tool.sugg.length) tool.suggErr = "No ideas came back. Try another style.";
+    } catch (err) { tool.suggErr = aiError(err); }
+    tool.suggBusy = false; renderTool();
+  }
+});
+$("#toolBody").addEventListener("change", (e) => { if (e.target.id === "sgKind") tool.sgKind = e.target.value; if (e.target.id === "sgStyle") tool.sgStyle = e.target.value; });
+$("#toolBody").addEventListener("keydown", (e) => { if (e.key !== "Enter" || e.isComposing) return; const map = { nmNew: "[data-addname]", bagNew: "[data-addbag]", apNote: "[data-addappt]" }; const sel = map[e.target.id]; if (sel) { e.preventDefault(); const btn = $(sel); if (btn) btn.click(); } });
+setInterval(() => {
+  if (tool.tab === "kicks" && tool.kickLive) { const el = $("#kickTime"); if (el) el.textContent = mmss(Date.now() - tool.kickLive.start); }
+  if (tool.tab === "contractions") { const r = tool.ctx.find((c) => !c.end), el = $("#ctxTime"); if (r && el) el.textContent = mmss(Date.now() - r.start); }
+}, 500);
+
+/* ---------- bump timeline ---------- */
+function renderBumps() {
+  const photos = state.memories.filter((m) => m.type === "photo" && m.image).sort((a, b) => a.week - b.week || (a.date < b.date ? -1 : 1));
+  $("#bumpStrip").innerHTML = photos.length ? `<div class="card pad" style="border-radius:28px;margin-top:4px"><div style="display:flex;justify-content:space-between;align-items:baseline"><p style="margin:0;font-weight:700">Your bump, week by week</p><p class="lbl tab">${photos.length} ${photos.length === 1 ? "photo" : "photos"}</p></div><div class="bumps">${photos.map((m) => `<div class="bump"><img src="${m.image}" alt="Week ${m.week}" loading="lazy"><span class="tab">Week ${m.week}</span></div>`).join("")}<button class="bump drop" style="height:160px;width:120px;border-radius:20px" data-add>${icon("plus", 22)}<span style="position:static;background:none;color:var(--muted)">This week</span></button></div></div>` : "";
+}
+
+/* ---------- decorative ---------- */
+$("#logoMark").innerHTML = brick(BR.yellow, 1, 14) + brick(BR.red, 2, 26);
+$("#footBricks").innerHTML = SEQ.map((c, i) => brick(c, i + 1, 22 * (i + 1))).join("");
+$("#floaters").innerHTML = [["6%", "4%", BR.red, 2, 54, -14, 7, 0, .9, 0], ["14%", "86%", BR.blue, 3, 70, 10, 8.5, .6, .85, 0], ["46%", "92%", BR.yellow, 1, 30, 22, 6.5, 1.1, .7, 1], ["70%", "2%", BR.green, 2, 46, 8, 9, .3, .75, 1.5], ["34%", "-3%", BR.yellow, 4, 84, -6, 10, 1.4, .35, 4], ["84%", "80%", BR.red, 1, 26, -18, 7.5, .9, .6, 2]]
+  .map(([t, l, c, s, w, r, d, dl, o, bl]) => `<span style="top:${t};left:${l};--r:${r}deg;--d:${d}s;--dl:${dl}s;opacity:${o};${bl ? `filter:blur(${bl}px)` : ""}">${brick(c, s, w)}</span>`).join("");
+
+/* ---------- boot ---------- */
+applyTheme();
+refresh();
+selectWeek(state.selected, false);
+renderMemories();
+renderChat(); renderToolTabs(); renderTool();
+if (STANDALONE) { $("#icsBtn").hidden = false; $("#icsNote").textContent = "Tap the button, then Add All. Your partner can do the same on her phone."; const cal = $("#calIntro"); if (cal) cal.innerHTML = "Every week from 1 to 40, with an alert at 9:00, a line of motivation, and a link back to this site."; }
+goView(VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "today", null, false);
+$("#calcDate").value = S.lmp; renderCalc();
+</script>
+</body>
+</html>
